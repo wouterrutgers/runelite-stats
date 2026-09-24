@@ -134,6 +134,9 @@ const markers = computed(
               </div>
               <span class="badge">Latest 30 PRs</span>
             </div>
+            <p class="panel-note">
+              Activity omits unmerged pull requests with zero or multiple changed files.
+            </p>
             <ActivityList :records="data.development.recent" :complete="data.githubComplete" />
           </section>
           <aside class="panel metadata-panel">

@@ -37,6 +37,9 @@ const latency = computed(() =>
           <span>GitHub history · {{ timestamp(data[0].syncedAt) }}</span
           ><span>runelite/plugin-hub</span>
         </div>
+        <p class="panel-note">
+          Activity omits unmerged pull requests with zero or multiple changed files.
+        </p>
         <p v-if="!data[0].complete" class="notice">
           The full GitHub history has not been collected yet. PR metrics stay unavailable until the
           backfill completes.
@@ -58,7 +61,7 @@ const latency = computed(() =>
           /><MetricCard
             label="Total merged PRs"
             :value="number(data[0].totalMerged)"
-            note="All repository pull requests"
+            note="Activity omits unmerged pull requests with zero or multiple changed files."
           /><MetricCard
             label="Median resolution time"
             :value="duration(data[0].medianHours)"

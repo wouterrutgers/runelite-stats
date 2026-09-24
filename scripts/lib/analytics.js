@@ -39,6 +39,9 @@ function emptyActivity() {
 }
 
 export function aggregateHub(prs, currentPlugins, now, complete) {
+  const activityPullRequests = prs.filter(
+    (record) => record.changedFiles === 1 || record.state === 'MERGED',
+  )
   const byPlugin = new Map()
   const classifications = new Map()
   const aliases = []
@@ -63,7 +66,7 @@ export function aggregateHub(prs, currentPlugins, now, complete) {
       })
     return buckets.get(date)
   }
-  for (const record of prs) {
+  for (const record of activityPullRequests) {
     const classified = classifyPullRequest(record)
     classifications.set(record.number, classified)
     bucket(record.createdAt).opened++
@@ -86,6 +89,12 @@ export function aggregateHub(prs, currentPlugins, now, complete) {
       activity(classified.rename.to).aliases.push(classified.rename)
     }
     for (const change of classified.changes) {
+      if (!change.merged) continue
+      if (change.type === 'added') bucket(record.mergedAt).added++
+      if (change.type === 'removed') bucket(record.mergedAt).removed++
+    }
+    if (record.mergedAt) bucket(record.mergedAt).events.push(record)
+    for (const change of classified.changes) {
       const plugin = activity(change.internalName)
       plugin.recent.push({
         number: record.number,
@@ -103,9 +112,7 @@ export function aggregateHub(prs, currentPlugins, now, complete) {
       if (change.type === 'added') {
         if (!plugin.firstAddedAt || record.mergedAt < plugin.firstAddedAt)
           plugin.firstAddedAt = record.mergedAt
-        bucket(record.mergedAt).added++
       }
-      if (change.type === 'removed') bucket(record.mergedAt).removed++
       if (change.type === 'updated' || change.type === 'renamed') {
         plugin.mergedUpdates++
         if (Date.parse(record.mergedAt) >= Date.parse(now) - 90 * DAY) plugin.updates90d++
@@ -113,7 +120,6 @@ export function aggregateHub(prs, currentPlugins, now, complete) {
       if (!plugin.lastUpdatedAt || record.mergedAt > plugin.lastUpdatedAt)
         plugin.lastUpdatedAt = record.mergedAt
     }
-    if (record.mergedAt) bucket(record.mergedAt).events.push(record)
   }
   for (const plugin of byPlugin.values())
     plugin.recent.sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))
@@ -121,7 +127,7 @@ export function aggregateHub(prs, currentPlugins, now, complete) {
   const membership = new Set(
     currentPlugins.filter((plugin) => plugin.current).map((plugin) => plugin.internalName),
   )
-  const merged = prs
+  const merged = activityPullRequests
     .filter((record) => record.mergedAt)
     .sort(
       (left, right) => left.mergedAt.localeCompare(right.mergedAt) || left.number - right.number,
@@ -175,7 +181,7 @@ export function aggregateHub(prs, currentPlugins, now, complete) {
         resolved: row.durations.length,
       })
     }
-  const durations = prs
+  const durations = activityPullRequests
     .filter((record) => record.mergedAt || record.closedAt)
     .map(
       (record) =>
@@ -194,7 +200,9 @@ export function aggregateHub(prs, currentPlugins, now, complete) {
       lastCompleteWeek: lastWeek?.date || null,
       totalMerged: complete ? merged.length : null,
       currentPlugins: currentPlugins.filter((plugin) => plugin.current && !plugin.disabled).length,
-      backlog: complete ? prs.filter((record) => record.state === 'OPEN').length : null,
+      backlog: complete
+        ? activityPullRequests.filter((record) => record.state === 'OPEN').length
+        : null,
       medianHours: complete ? quantile(durations, 0.5) : null,
       p90Hours: complete ? quantile(durations, 0.9) : null,
       added30d: complete
