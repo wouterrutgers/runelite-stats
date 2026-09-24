@@ -4,25 +4,16 @@ on:
   schedule:
     - cron: '17 */6 * * *'
   workflow_dispatch:
-    inputs:
-      full_backfill:
-        description: Fetch all pull requests again
-        type: boolean
 
 permissions:
   contents: write
   pages: write
   id-token: write
 
-concurrency:
-  group: pages-and-source-data
-  cancel-in-progress: false
-
 jobs:
   collect:
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
-    timeout-minutes: 90
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
@@ -30,29 +21,15 @@ jobs:
       PAGES_BASE_PATH: ${{ vars.PAGES_BASE_PATH || format('/{0}/', github.event.repository.name) }}
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: master
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - name: Restore backfill progress
-        uses: actions/cache/restore@v6
-        with:
-          path: .cache/github-backfill.json
-          key: github-backfill-v1-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: github-backfill-v1-
       - name: Update data
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run sync ${{ inputs.full_backfill && '-- --full' || '' }}
-      - name: Save backfill progress
-        if: failure()
-        uses: actions/cache/save@v6
-        with:
-          path: .cache/github-backfill.json
-          key: github-backfill-v1-${{ github.run_id }}-${{ github.run_attempt }}
+        run: npm run sync
       - name: Check and build
         run: npm run check
       - name: Commit data

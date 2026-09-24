@@ -224,7 +224,6 @@ async function incremental(ledger, watermark, token, fetchPage) {
 export async function collectGitHub(
   source,
   {
-    full = false,
     token = process.env.GITHUB_TOKEN,
     fetchPage = githubPage,
     checkpointPath = path.join(ROOT, '.cache', 'github-backfill.json'),
@@ -236,7 +235,7 @@ export async function collectGitHub(
   )
   const startedAt = new Date().toISOString()
   let ledger
-  if (!full && source.prState.complete) {
+  if (source.prState.complete) {
     ledger = await incremental(source.prs, source.prState.syncedAt, token, fetchPage)
   } else {
     let checkpoint = await readJson(checkpointPath, {

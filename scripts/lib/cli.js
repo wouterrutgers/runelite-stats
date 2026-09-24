@@ -9,7 +9,7 @@ export async function synchronize(collectors) {
     let next = source
     if (collectors.includes('runelite')) next = await collectRuneLite(next)
     if (collectors.includes('github'))
-      next = await collectGitHub(next, { full: process.argv.includes('--full') })
+      next = await collectGitHub(next)
     return next
   })
   if (collectors.includes('github'))
