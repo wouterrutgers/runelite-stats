@@ -1,20 +1,20 @@
 # RuneLite Hub Stats
 
-A community dashboard for RuneLite Plugin Hub install counts, growth rankings and pull request activity. It combines current install counts from RuneLite with snapshots collected here and pull request history from `runelite/plugin-hub`. GitHub Actions refreshes the data every six hours.
+Find popular RuneLite plugins, discover what is growing, and follow new additions to the Plugin Hub.
+Plugin pages show install counts, history, release details, author credits, and recent changes.
 
-The project is independent of RuneLite and Jagex. Install history starts with the first collection because RuneLite only provides current counts.
+## Explore the site
 
-## Local development
+- **Plugins:** Browse the directory and open a page for details about any plugin.
+- **Growth:** Compare plugins gaining installs and find new additions.
+- **Developers:** Explore credited plugins and their combined install totals.
+- **Hub activity:** See plugins added or updated and follow changes to the Plugin Hub.
 
-Requires Node 24 or newer.
+## About the data
 
-```sh
-npm install
-npm run dev
-```
+Install counts are recorded per plugin, so totals do not represent unique players. Historical charts
+start when collection began, and information refreshes every six hours. Plugin details and install
+counts come from the [RuneLite Plugin Hub](https://runelite.net/plugin-hub/). Plugin changes come
+from its [public repository](https://github.com/runelite/plugin-hub).
 
-The dev command rebuilds the datasets from `data/` into the ignored `public/data/` directory before starting Vite. Run `npm run check` to lint the code, validate source data and build the site.
-
-## Updating data
-
-The scheduled workflow collects install counts and GitHub pull request history, commits the refreshed source data and deploys the site. To run both collectors locally, set `GITHUB_TOKEN` and run `npm run sync`. Use `npm run sync:runelite` to collect install data without a token, or `npm run sync:github` to collect pull request history with one.
+This is an unofficial community project and is not affiliated with RuneLite or Jagex.
