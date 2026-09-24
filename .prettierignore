@@ -1,0 +1,6 @@
+data/
+public/data/
+dist/
+node_modules/
+.cache/
+package-lock.json

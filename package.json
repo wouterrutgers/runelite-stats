@@ -1,0 +1,37 @@
+{
+  "name": "runelite-stats",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "npm run aggregate && vite",
+    "build": "npm run aggregate && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "check": "npm run lint && npm run validate && npm run build",
+    "sync": "node scripts/sync.js",
+    "sync:runelite": "node scripts/sync-runelite.js",
+    "sync:github": "node scripts/sync-github.js",
+    "aggregate": "node scripts/aggregate.js",
+    "validate": "node scripts/validate.js",
+    "import:history": "node scripts/import-history.js"
+  },
+  "dependencies": {
+    "chart.js": "^4.5.1",
+    "vue": "^3.5.42",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "eslint": "^10.11.0",
+    "eslint-plugin-vue": "^10.5.1",
+    "globals": "^17.0.0",
+    "prettier": "^3.9.9",
+    "vite": "^8.3.0"
+  }
+}
