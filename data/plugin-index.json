@@ -2731,5 +2731,8 @@
   "zoom",
   "zoom-keybinding",
   "zulrah-helper",
-  "zulrah-loot-locator"
+  "zulrah-loot-locator",
+  "direct-messages",
+  "ground-marker-variables",
+  "runeassist-flipping"
 ]
