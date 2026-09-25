@@ -51,6 +51,9 @@
           <RouterLink to="/developers">Explore developer profiles</RouterLink>
           <RouterLink to="/hub">View Hub activity</RouterLink>
           <a href="https://runelite.net/plugin-hub/">Open the RuneLite Plugin Hub ↗</a>
+          <a href="https://github.com/wouterrutgers/runelite-stats" target="_blank" rel="noreferrer"
+            >View this project on GitHub ↗</a
+          >
         </section>
       </aside>
     </div>
