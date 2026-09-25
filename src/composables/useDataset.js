@@ -1,10 +1,11 @@
 import { ref, toValue, watch } from 'vue'
 const cache = new Map()
+const datasetHash = import.meta.env.DATASET_HASH
 export async function loadDataset(filename) {
   if (!cache.has(filename)) {
     cache.set(
       filename,
-      fetch(`${import.meta.env.BASE_URL}data/${filename}`)
+      fetch(`${import.meta.env.BASE_URL}data/${filename}?v=${datasetHash}`)
         .then(async (response) => {
           if (!response.ok)
             throw new Error(
