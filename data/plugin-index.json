@@ -2734,5 +2734,11 @@
   "zulrah-loot-locator",
   "direct-messages",
   "ground-marker-variables",
-  "runeassist-flipping"
+  "runeassist-flipping",
+  "cm-storage-presets",
+  "evi-live",
+  "npc-permadeath",
+  "sidebar-favorites",
+  "w2",
+  "wheelbound"
 ]
