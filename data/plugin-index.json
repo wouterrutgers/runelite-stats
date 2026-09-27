@@ -2759,5 +2759,9 @@
   "auto-chat-suppression",
   "cargo-hold-alert",
   "pet-mounts",
-  "slay-queen"
+  "slay-queen",
+  "bank-ledger-uploader",
+  "dog-speak",
+  "runeradar",
+  "xp-drop-logger"
 ]
