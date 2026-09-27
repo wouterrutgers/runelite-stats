@@ -2755,5 +2755,9 @@
   "npc-attacker-count",
   "thieving-stalls-loot-tracker",
   "one-click-goutweed",
-  "health-threshold-indicators"
+  "health-threshold-indicators",
+  "auto-chat-suppression",
+  "cargo-hold-alert",
+  "pet-mounts",
+  "slay-queen"
 ]
