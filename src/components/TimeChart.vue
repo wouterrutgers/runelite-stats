@@ -10,7 +10,7 @@ import {
   Legend,
   Filler,
 } from 'chart.js'
-import { number, date, duration } from '../utils/format.js'
+import { number, duration, date } from '../utils/format.js'
 Chart.register(LineController, LineElement, PointElement, LinearScale, Tooltip, Legend, Filler)
 const props = defineProps({
   rows: { type: Array, required: true },
@@ -20,19 +20,33 @@ const props = defineProps({
   unit: { type: String, default: 'count' },
   markers: { type: Array, default: () => [] },
   compact: Boolean,
+  hideSummary: Boolean,
 })
 const canvas = ref(null)
 const descriptionId = useId()
 let chart
 const latest = computed(() => props.rows.at(-1))
-const colors = ['#d1b476', '#91afb5', '#acb28b']
+const summary = computed(() =>
+  props.series
+    .map((series, position) => {
+      const label =
+        position === 0 ? series.label : `${series.label[0].toLowerCase()}${series.label.slice(1)}`
+      const value =
+        props.unit === 'hours'
+          ? duration(latest.value[series.key])
+          : number(latest.value[series.key])
+      return `${label}: ${value}`
+    })
+    .join(', '),
+)
+const colors = ['#6ea8fe', '#a1acba', '#d2d8e1']
 const markerPlugin = {
   id: 'developmentMarkers',
   afterDraw(instance) {
     const { ctx: context, chartArea, scales } = instance
     if (!chartArea) return
     context.save()
-    context.strokeStyle = '#d1b47680'
+    context.strokeStyle = '#6ea8fe80'
     context.setLineDash([3, 5])
     for (const marker of props.markers) {
       const time = Date.parse(marker.mergedAt)
@@ -84,15 +98,18 @@ function draw() {
           display: props.series.length > 1,
           position: 'bottom',
           align: 'start',
-          labels: { color: '#b6b1a6', usePointStyle: true, pointStyle: 'line', padding: 20 },
+          labels: { color: '#a1acba', usePointStyle: true, pointStyle: 'line', padding: 16 },
         },
         tooltip: {
-          backgroundColor: '#25231f',
-          borderColor: '#504b40',
+          backgroundColor: '#1d2026',
+          borderColor: '#444c59',
+          titleColor: '#eef0f3',
+          bodyColor: '#eef0f3',
           borderWidth: 1,
           padding: 12,
           callbacks: {
             title(items) {
+              if (props.dateKey === 'weekEndedAt') return `Week ending ${date(items[0].parsed.x)}`
               return (
                 new Intl.DateTimeFormat('en', {
                   dateStyle: 'medium',
@@ -115,7 +132,7 @@ function draw() {
           min: range === 0 ? earliest - 3_600_000 : earliest,
           max: range === 0 ? latestTime + 3_600_000 : latestTime,
           ticks: {
-            color: '#a29c90',
+            color: '#a1acba',
             maxTicksLimit: props.compact ? 4 : 6,
             maxRotation: 0,
             callback(value) {
@@ -133,9 +150,9 @@ function draw() {
         y: {
           beginAtZero: true,
           border: { display: false },
-          grid: { color: '#ffffff09' },
+          grid: { color: '#eef0f310' },
           ticks: {
-            color: '#a29c90',
+            color: '#a1acba',
             maxTicksLimit: 5,
             callback(value) {
               return props.unit === 'hours'
@@ -159,48 +176,17 @@ onBeforeUnmount(() => chart?.destroy())
       <small>Try another range or check after the next collection.</small>
     </div>
     <div v-else class="chart-canvas" :class="{ compact }">
-      <canvas ref="canvas" role="img" :aria-label="label" :aria-describedby="descriptionId">{{
-        label
-      }}</canvas>
+      <canvas
+        ref="canvas"
+        role="img"
+        :aria-label="label"
+        :aria-describedby="hideSummary ? undefined : descriptionId"
+        >{{ label }}</canvas
+      >
     </div>
-    <figcaption :id="descriptionId" class="chart-context">
-      <template v-if="latest"
-        >{{ rows.length }} observations · Latest {{ date(latest[dateKey])
-        }}<span v-for="seriesItem in series" :key="seriesItem.key">
-          · {{ seriesItem.label }}:
-          {{
-            unit === 'hours' ? duration(latest[seriesItem.key]) : number(latest[seriesItem.key])
-          }}</span
-        ></template
-      ><span v-else>{{ label }}</span>
+    <figcaption v-if="!hideSummary" :id="descriptionId" class="chart-context">
+      <template v-if="latest">{{ summary }}</template>
+      <span v-else>{{ label }}</span>
     </figcaption>
-    <details v-if="rows.length" class="chart-data">
-      <summary>View chart data</summary>
-      <div class="table-scroll">
-        <table>
-          <caption class="sr-only">
-            {{
-              label
-            }}
-          </caption>
-          <thead>
-            <tr>
-              <th>Date (UTC)</th>
-              <th v-for="seriesItem in series" :key="seriesItem.key">{{ seriesItem.label }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(row, index) in rows" :key="index">
-              <th scope="row">
-                {{ new Date(row[dateKey]).toISOString().replace('T', ' ').slice(0, 16) }}
-              </th>
-              <td v-for="seriesItem in series" :key="seriesItem.key">
-                {{ unit === 'hours' ? duration(row[seriesItem.key]) : number(row[seriesItem.key]) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </details>
   </figure>
 </template>

@@ -16,13 +16,13 @@ const { data, error, loading, reload } = useDataset([
 ])
 const range = ref('6m')
 const weekly = computed(() =>
-  data.value ? withinRange(data.value[1], range.value, data.value[0].syncedAt, 'date') : [],
+  data.value ? withinRange(data.value[1], range.value, data.value[0].syncedAt, 'weekEndedAt') : [],
 )
 const backlog = computed(() =>
-  data.value ? withinRange(data.value[2], range.value, data.value[0].syncedAt, 'date') : [],
+  data.value ? withinRange(data.value[2], range.value, data.value[0].syncedAt, 'weekEndedAt') : [],
 )
 const latency = computed(() =>
-  data.value ? withinRange(data.value[3], range.value, data.value[0].syncedAt, 'date') : [],
+  data.value ? withinRange(data.value[3], range.value, data.value[0].syncedAt, 'weekEndedAt') : [],
 )
 </script>
 <template>
@@ -34,19 +34,16 @@ const latency = computed(() =>
     <DataState :loading="loading" :error="error" @retry="reload"
       ><template v-if="data"
         ><div class="data-strip">
-          <span>GitHub history · {{ timestamp(data[0].syncedAt) }}</span
+          <span>Last updated from GitHub on {{ timestamp(data[0].syncedAt) }}</span
           ><span>runelite/plugin-hub</span>
         </div>
-        <p class="panel-note">
-          Activity omits unmerged pull requests with zero or multiple changed files.
-        </p>
         <p v-if="!data[0].complete" class="notice">
           The full GitHub history has not been collected yet. PR metrics stay unavailable until the
           backfill completes.
         </p>
         <section class="metrics-grid four">
           <MetricCard
-            label="PRs merged · last week"
+            label="PRs merged last week"
             :value="number(data[0].mergedLastWeek)"
             :note="
               data[0].lastCompleteWeek
@@ -58,11 +55,7 @@ const latency = computed(() =>
             label="Active Hub plugins"
             :value="number(data[0].currentPlugins)"
             note="Excluding disabled plugins"
-          /><MetricCard
-            label="Total merged PRs"
-            :value="number(data[0].totalMerged)"
-            note="Activity omits unmerged pull requests with zero or multiple changed files."
-          /><MetricCard
+          /><MetricCard label="Total merged PRs" :value="number(data[0].totalMerged)" /><MetricCard
             label="Median resolution time"
             :value="duration(data[0].medianHours)"
             :note="`90th percentile: ${duration(data[0].p90Hours)}`"
@@ -72,7 +65,7 @@ const latency = computed(() =>
           <div>
             <h2>Weekly activity</h2>
             <p class="panel-note">
-              Complete UTC weeks, starting Monday. Current partial week excluded.
+              Complete weeks from Monday to Sunday in UTC. The current week is excluded.
             </p>
           </div>
           <DateRanges v-model="range" :options="['1m', '3m', '6m', '1y', 'All']" />
@@ -84,23 +77,25 @@ const latency = computed(() =>
               :rows="weekly"
               :series="[
                 { key: 'opened', label: 'Opened' },
-                { key: 'merged', label: 'Merged' },
-                { key: 'closed', label: 'Closed without merge' },
+                { key: 'merged', label: 'merged', color: '#78c69b' },
+                { key: 'closed', label: 'closed without merge', color: '#ee8e96' },
               ]"
-              date-key="date"
+              date-key="weekEndedAt"
               label="Weekly Plugin Hub PR activity"
+              hide-summary
             />
           </section>
           <section class="panel">
             <div class="section-heading">
               <h3>Open backlog</h3>
-              <span class="badge">{{ number(data[0].backlog) }} open now</span>
+              <span class="badge">{{ number(data[0].backlog) }} open at last update</span>
             </div>
             <TimeChart
               :rows="backlog"
-              :series="[{ key: 'backlog', label: 'Open PRs', color: '#d1b476' }]"
-              date-key="date"
+              :series="[{ key: 'backlog', label: 'Open PRs at week end' }]"
+              date-key="weekEndedAt"
               label="Open pull requests at each week end"
+              hide-summary
             />
           </section>
           <section class="panel">
@@ -108,11 +103,12 @@ const latency = computed(() =>
             <TimeChart
               :rows="weekly"
               :series="[
-                { key: 'added', label: 'Added' },
-                { key: 'removed', label: 'Removed', color: '#df8f7e' },
+                { key: 'added', label: 'Added', color: '#78c69b' },
+                { key: 'removed', label: 'Removed', color: '#ee8e96' },
               ]"
-              date-key="date"
+              date-key="weekEndedAt"
               label="Weekly plugin additions and removals"
+              hide-summary
             />
           </section>
           <section class="panel">
@@ -123,38 +119,31 @@ const latency = computed(() =>
                 { key: 'medianHours', label: 'Median' },
                 { key: 'p90Hours', label: '90th percentile' },
               ]"
-              date-key="date"
+              date-key="weekEndedAt"
               unit="hours"
               label="Time from PR opening to merge or closure"
+              hide-summary
             />
-            <p class="panel-note">
-              Elapsed time until resolution, including author revisions and waiting. This is not
-              time to first review.
-            </p>
           </section>
         </div>
         <section class="panel detail-bottom">
           <div class="section-heading">
-            <h3>Plugin count over time</h3>
-            <span class="badge">Inferred from merged PRs</span>
+            <h3>Total plugins over time</h3>
           </div>
           <TimeChart
             :rows="weekly"
-            :series="[{ key: 'active', label: 'Plugin pointers' }]"
-            date-key="date"
-            label="Historical Plugin Hub pointer count"
+            :series="[{ key: 'active', label: 'Plugins' }]"
+            date-key="weekEndedAt"
+            label="Total plugins over time"
             compact
+            hide-summary
           />
-          <p class="panel-note">
-            Membership is reconstructed from additions and deletions, anchored to the current
-            repository. Direct commits and disabled history cannot be fully inferred from PRs.
-          </p>
         </section>
         <div class="two-grid detail-bottom">
           <section class="panel">
             <div class="section-heading">
               <div>
-                <h2>Most updated <span class="subtle-label">90d</span></h2>
+                <h2>Most updated plugins in the past 90 days</h2>
               </div>
             </div>
             <ol v-if="data[0].active.length" class="maintenance-list">
@@ -170,7 +159,7 @@ const latency = computed(() =>
           <section class="panel">
             <div class="section-heading">
               <div>
-                <h2>Top contributors <span class="subtle-label">All time</span></h2>
+                <h2>Top contributors of all time</h2>
               </div>
             </div>
             <ol v-if="data[4].length" class="maintenance-list">
@@ -179,7 +168,7 @@ const latency = computed(() =>
                   >{{ author.login }} ↗</a
                 ><strong
                   >{{ number(author.merged) }}
-                  <small>merged · {{ number(author.opened) }} opened</small></strong
+                  <small>merged and {{ number(author.opened) }} opened</small></strong
                 >
               </li>
             </ol>

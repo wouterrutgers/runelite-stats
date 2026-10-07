@@ -24,12 +24,12 @@ defineProps({ records: { type: Array, required: true }, complete: Boolean })
           ><span class="badge">{{ record.changeType }}</span>
         </div>
         <p>
-          {{ record.author || 'Deleted account' }} · Opened {{ date(record.createdAt)
-          }}<template v-if="record.mergedAt || record.closedAt">
-            · {{ record.mergedAt ? 'Merged' : 'Closed' }}
-            {{ date(record.mergedAt || record.closedAt) }} · Resolved in
-            {{ duration(record.durationHours) }}</template
-          >
+          Opened on {{ date(record.createdAt) }} by {{ record.author || 'a deleted account' }}.
+          <template v-if="record.mergedAt || record.closedAt">
+            {{ record.mergedAt ? 'Merged' : 'Closed' }} on
+            {{ date(record.mergedAt || record.closedAt) }} after
+            {{ duration(record.durationHours) }}.
+          </template>
         </p>
       </div>
     </li>

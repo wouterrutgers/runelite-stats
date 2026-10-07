@@ -6,22 +6,13 @@ const props = defineProps({
   plugins: { type: Array, required: true },
   period: { type: String, default: '' },
   defaultSort: { type: String, default: 'installs' },
-  filters: { type: Boolean, default: true },
 })
 const identifier = useId()
 const search = ref('')
-const tag = ref('')
-const status = ref('')
-const availability = ref('')
 const sort = ref(props.defaultSort)
 const descending = ref(true)
 const page = ref(1)
 const pageSize = 30
-const tags = computed(() =>
-  [...new Set(props.plugins.flatMap((plugin) => plugin.tags))].sort((left, right) =>
-    left.localeCompare(right),
-  ),
-)
 const searchable = computed(() =>
   props.plugins.map((plugin) => ({
     plugin,
@@ -60,18 +51,7 @@ function value(plugin, key) {
 const matching = computed(() => {
   const query = search.value.trim().toLocaleLowerCase()
   const plugins = searchable.value
-    .filter(
-      ({ plugin, text }) =>
-        (!query || text.includes(query)) &&
-        (!tag.value || plugin.tags.includes(tag.value)) &&
-        (!status.value ||
-          (status.value === 'current'
-            ? plugin.current && !plugin.disabled
-            : status.value === 'disabled'
-              ? plugin.disabled
-              : !plugin.current)) &&
-        (!availability.value || plugin.available === (availability.value === 'available')),
-    )
+    .filter(({ text }) => !query || text.includes(query))
     .map((row) => row.plugin)
   if (sort.value === 'rank') return plugins
   return plugins.sort((left, right) => {
@@ -90,7 +70,7 @@ const pages = computed(() => Math.max(1, Math.ceil(matching.value.length / pageS
 const visible = computed(() =>
   matching.value.slice((page.value - 1) * pageSize, page.value * pageSize),
 )
-watch([search, tag, status, availability, sort, descending, () => props.plugins], () => {
+watch([search, sort, descending, () => props.plugins], () => {
   page.value = 1
 })
 function sortBy(key) {
@@ -114,30 +94,9 @@ function sortBy(key) {
           placeholder="Search names, authors, tags…"
           aria-label="Search plugins"
       /></label>
-      <template v-if="filters"
-        ><label class="sr-only" :for="`${identifier}-tag`">Tag</label
-        ><select :id="`${identifier}-tag`" v-model="tag">
-          <option value="">All tags</option>
-          <option v-for="item in tags" :key="item">{{ item }}</option></select
-        ><label class="sr-only" :for="`${identifier}-status`">Plugin status</label
-        ><select :id="`${identifier}-status`" v-model="status">
-          <option value="">All statuses</option>
-          <option value="current">Current</option>
-          <option value="disabled">Disabled</option>
-          <option value="removed">Removed</option></select
-        ><label class="sr-only" :for="`${identifier}-availability`">Availability</label
-        ><select :id="`${identifier}-availability`" v-model="availability">
-          <option value="">Any availability</option>
-          <option value="available">Available</option>
-          <option value="unavailable">Unavailable</option>
-        </select></template
-      >
+      <span class="muted" aria-live="polite">{{ number(matching.length) }} plugins</span>
     </div>
-    <p class="table-count" aria-live="polite">
-      {{ number(matching.length) }} plugins<span class="mobile-hint">
-        · Scroll the table to see all columns</span
-      >
-    </p>
+    <p class="table-hint">Scroll the table to see all columns</p>
     <div class="table-scroll" tabindex="0" role="region" aria-label="Plugin statistics table">
       <table class="plugin-table">
         <caption class="sr-only">
@@ -162,13 +121,27 @@ function sortBy(key) {
         <tbody>
           <tr v-for="plugin in visible" :key="plugin.internalName">
             <td class="plugin-cell">
-              <RouterLink :to="`/plugin/${plugin.internalName}`">{{
-                plugin.displayName
-              }}</RouterLink
-              ><span v-if="plugin.disabled" class="badge">Disabled</span
-              ><span v-else-if="!plugin.current" class="badge">Historical</span
-              ><small>{{ plugin.author || plugin.internalName }}</small>
-              <p>{{ plugin.description }}</p>
+              <div class="plugin-cell-content">
+                <span class="plugin-icon" aria-hidden="true">
+                  <img
+                    v-if="plugin.iconHash"
+                    :src="`https://repo.runelite.net/plugins/icon/${plugin.internalName}_${plugin.iconHash}.png`"
+                    alt=""
+                    width="24"
+                    height="24"
+                    loading="lazy"
+                  />
+                </span>
+                <div class="plugin-cell-details">
+                  <RouterLink :to="`/plugin/${plugin.internalName}`">{{
+                    plugin.displayName
+                  }}</RouterLink
+                  ><span v-if="plugin.disabled" class="badge">Disabled</span
+                  ><span v-else-if="!plugin.current" class="badge">Historical</span
+                  ><small>{{ plugin.author || plugin.internalName }}</small>
+                  <p>{{ plugin.description }}</p>
+                </div>
+              </div>
             </td>
             <td class="numeric">{{ number(plugin.installs) }}</td>
             <td class="numeric">{{ number(plugin.high?.count) }}</td>

@@ -45,6 +45,6 @@ const router = createRouter({
   ],
 })
 router.afterEach((to) => {
-  document.title = `${to.meta.title} · RuneLite Hub Stats`
+  document.title = `${to.meta.title} on RuneLite Hub Stats`
 })
 export default router

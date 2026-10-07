@@ -53,7 +53,6 @@ const ranked = computed(() => {
             :plugins="ranked"
             :period="period"
             default-sort="rank"
-            :filters="false"
           />
         </section>
         <section class="methodology">

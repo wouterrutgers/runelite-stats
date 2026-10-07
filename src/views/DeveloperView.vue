@@ -13,7 +13,7 @@ const { data, error, loading, reload } = useDataset(
   () => `developer/${encodeURIComponent(route.params.slug)}.json`,
 )
 watch(data, (developer) => {
-  if (developer) document.title = `${developer.name} · RuneLite Hub Stats`
+  if (developer) document.title = `${developer.name} on RuneLite Hub Stats`
 })
 </script>
 <template>
@@ -24,8 +24,8 @@ watch(data, (developer) => {
         ><header class="page-heading">
           <h1>{{ data.name }}</h1>
           <p>
-            First publication {{ date(data.firstPublishedAt) }} · Latest update
-            {{ date(data.lastUpdatedAt) }}
+            First plugin published on {{ date(data.firstPublishedAt) }}. Latest plugin update on
+            {{ date(data.lastUpdatedAt) }}.
           </p>
         </header>
         <section class="metrics-grid three">

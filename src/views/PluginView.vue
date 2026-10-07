@@ -15,7 +15,7 @@ const { data, error, loading, reload } = useDataset(
 )
 const range = ref('30d')
 watch(data, (plugin) => {
-  if (plugin) document.title = `${plugin.displayName} · RuneLite Hub Stats`
+  if (plugin) document.title = `${plugin.displayName} on RuneLite Hub Stats`
 })
 const history = computed(() => {
   if (!data.value) return []
@@ -35,6 +35,14 @@ const markers = computed(
     ><DataState :loading="loading" :error="error" @retry="reload"
       ><template v-if="data"
         ><header class="plugin-heading">
+          <img
+            v-if="data.iconHash"
+            class="plugin-icon large"
+            :src="`https://repo.runelite.net/plugins/icon/${data.internalName}_${data.iconHash}.png`"
+            alt=""
+            width="48"
+            height="48"
+          />
           <div>
             <p class="record-label">{{ data.internalName }}</p>
             <h1>{{ data.displayName }}</h1>
@@ -76,7 +84,10 @@ const markers = computed(
             target="_blank"
             rel="noreferrer"
             >Source repository ↗</a
-          ><span>Released {{ date(data.createdAt) }} · Updated {{ date(data.lastUpdatedAt) }}</span>
+          ><span
+            >Release date: {{ date(data.createdAt) }}. Last update:
+            {{ date(data.lastUpdatedAt) }}.</span
+          >
         </div>
         <p v-if="data.warning || data.unavailableReason" class="notice">
           {{ data.unavailableReason || data.warning }}
@@ -122,7 +133,7 @@ const markers = computed(
                 ? 'Observations every six hours.'
                 : 'First successful observation of each UTC day.'
             }}
-            Gold markers show recent merged changes listed below. Missing observations are not zero
+            Blue markers show recent merged changes listed below. Missing observations are not zero
             installs.
           </p>
         </section>
@@ -134,9 +145,6 @@ const markers = computed(
               </div>
               <span class="badge">Latest 30 PRs</span>
             </div>
-            <p class="panel-note">
-              Activity omits unmerged pull requests with zero or multiple changed files.
-            </p>
             <ActivityList :records="data.development.recent" :complete="data.githubComplete" />
           </section>
           <aside class="panel metadata-panel">

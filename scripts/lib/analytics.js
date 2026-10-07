@@ -169,6 +169,7 @@ export function aggregateHub(prs, currentPlugins, now, complete) {
       }
       weekly.push({
         date,
+        weekEndedAt: new Date(time + 7 * DAY - 1).toISOString(),
         opened: row.opened,
         merged: row.merged,
         closed: row.closed,
@@ -294,6 +295,7 @@ export function buildDatasets(source) {
     return {
       internalName: plugin.internalName,
       displayName: plugin.displayName,
+      iconHash: plugin.iconHash,
       author: plugin.author,
       description: plugin.description,
       tags: plugin.tags,
@@ -440,8 +442,9 @@ export function buildDatasets(source) {
     ],
     [
       'hub/weekly.json',
-      hub.weekly.map(({ date, opened, merged, closed, added, removed, active }) => ({
+      hub.weekly.map(({ date, weekEndedAt, opened, merged, closed, added, removed, active }) => ({
         date,
+        weekEndedAt,
         opened,
         merged,
         closed,
@@ -450,11 +453,15 @@ export function buildDatasets(source) {
         active,
       })),
     ],
-    ['hub/backlog.json', hub.weekly.map(({ date, backlog }) => ({ date, backlog }))],
+    [
+      'hub/backlog.json',
+      hub.weekly.map(({ date, weekEndedAt, backlog }) => ({ date, weekEndedAt, backlog })),
+    ],
     [
       'hub/latency.json',
-      hub.weekly.map(({ date, medianHours, p90Hours, resolved }) => ({
+      hub.weekly.map(({ date, weekEndedAt, medianHours, p90Hours, resolved }) => ({
         date,
+        weekEndedAt,
         medianHours,
         p90Hours,
         resolved,

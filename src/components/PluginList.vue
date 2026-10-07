@@ -17,12 +17,23 @@ defineProps({
   <ol v-if="plugins.length" class="plugin-list">
     <li v-for="(plugin, position) in plugins" :key="plugin.internalName">
       <span class="rank">{{ position + 1 }}</span>
+      <span class="plugin-icon" aria-hidden="true">
+        <img
+          v-if="plugin.iconHash"
+          :src="`https://repo.runelite.net/plugins/icon/${plugin.internalName}_${plugin.iconHash}.png`"
+          alt=""
+          width="24"
+          height="24"
+          loading="lazy"
+        />
+      </span>
       <span class="plugin-list-name">
         <RouterLink :to="`/plugin/${plugin.internalName}`">{{ plugin.displayName }}</RouterLink>
-        <small
-          >{{ plugin.author || plugin.internalName
-          }}<template v-if="showDate"> · Added {{ date(plugin.createdAt) }}</template></small
-        >
+        <small>
+          <template v-if="plugin.author">By {{ plugin.author }}</template>
+          <template v-else>{{ plugin.internalName }}</template>
+          <template v-if="showDate">. Added on {{ date(plugin.createdAt) }}.</template>
+        </small>
       </span>
       <strong v-if="metric === 'installs'" class="numeric"
         >{{ number(plugin.installs) }}<small>installs</small></strong
@@ -32,6 +43,5 @@ defineProps({
   </ol>
   <div v-else class="ranking-empty">
     <p>{{ emptyMessage }}</p>
-    <RouterLink to="/about">How growth is calculated</RouterLink>
   </div>
 </template>
