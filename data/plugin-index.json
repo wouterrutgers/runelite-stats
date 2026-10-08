@@ -2891,5 +2891,8 @@
   "rgb-cursor",
   "tile-filler",
   "chat-hover-info",
-  "why-lag"
+  "why-lag",
+  "chat-lock-disabler",
+  "humblescape",
+  "lootingbagplus"
 ]
