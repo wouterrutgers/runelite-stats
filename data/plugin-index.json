@@ -2899,5 +2899,8 @@
   "farm-run-autopilot",
   "loot-pop",
   "spoop-dps",
-  "zman"
+  "zman",
+  "custom-entity-highlight",
+  "escape-crystal-calculator",
+  "seasonalscape"
 ]
