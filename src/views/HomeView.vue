@@ -46,7 +46,6 @@ const trend = computed(() =>
             class="update-info"
             aria-label="About scheduled updates"
             aria-describedby="update-schedule-note"
-            @click="$event.currentTarget.focus()"
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <circle cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width="1.25" />

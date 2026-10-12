@@ -200,7 +200,9 @@ nav a.is-active {
   white-space: nowrap;
 }
 .collection-time > span {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   margin-top: 5px;
   color: var(--muted);
 }
@@ -208,18 +210,16 @@ nav a.is-active {
   position: relative;
 }
 .update-info {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  margin-left: 3px;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-left: 2px;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: transparent;
   color: var(--muted);
-  vertical-align: middle;
+  line-height: 0;
 }
 .update-info:hover,
 .update-info:focus-visible {
@@ -242,8 +242,8 @@ nav a.is-active {
   text-align: left;
   white-space: normal;
 }
-.next-update:hover .update-info-tooltip,
-.next-update:focus-within .update-info-tooltip {
+.update-info:hover + .update-info-tooltip,
+.update-info:focus-visible + .update-info-tooltip {
   display: block;
 }
 .record-label {
@@ -1186,7 +1186,8 @@ tbody th {
     text-align: left;
   }
   .collection-time > span {
-    display: inline;
+    display: inline-flex;
+    justify-content: flex-start;
     margin-left: 12px;
   }
   .update-info-tooltip {
@@ -1250,7 +1251,7 @@ tbody th {
     padding: 28px 0 22px;
   }
   .collection-time > span {
-    display: block;
+    display: flex;
     margin: 4px 0 0;
   }
   .metrics-grid.six,
