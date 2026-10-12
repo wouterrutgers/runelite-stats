@@ -1,13 +1,29 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useDataset } from '../composables/useDataset.js'
-import { number, date, timestamp, duration, withinRange } from '../utils/format.js'
+import { number, date, relativeTime, duration, withinRange } from '../utils/format.js'
 import DataState from '../components/DataState.vue'
 import MetricCard from '../components/MetricCard.vue'
 import PluginList from '../components/PluginList.vue'
 import TimeChart from '../components/TimeChart.vue'
 import DateRanges from '../components/DateRanges.vue'
 const { data, error, loading, reload } = useDataset('summary.json')
+const currentTime = ref(Date.now())
+const nextUpdate = computed(function () {
+  const next = new Date(currentTime.value)
+  next.setUTCHours(Math.floor(next.getUTCHours() / 6) * 6, 17, 0, 0)
+  if (next.getTime() <= currentTime.value) next.setUTCHours(next.getUTCHours() + 6)
+  return next.toISOString()
+})
+let updateTimer
+onMounted(function () {
+  updateTimer = setInterval(function () {
+    currentTime.value = Date.now()
+  }, 60_000)
+})
+onBeforeUnmount(function () {
+  clearInterval(updateTimer)
+})
 const range = ref('30d')
 const trend = computed(() =>
   data.value ? withinRange(data.value.totalHistory, range.value, data.value.syncedAt) : [],
@@ -22,8 +38,8 @@ const trend = computed(() =>
         <p>RuneLite Plugin Hub popularity, growth and review statistics</p>
       </div>
       <p v-if="data" class="collection-time">
-        Updated {{ timestamp(data.syncedAt) }}
-        <span>Data collected every 6 hours</span>
+        Updated {{ relativeTime(data.syncedAt, currentTime) }}
+        <span>Next update {{ relativeTime(nextUpdate, currentTime) }}</span>
       </p>
     </header>
     <DataState :loading="loading" :error="error" @retry="reload">

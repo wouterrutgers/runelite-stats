@@ -1,5 +1,6 @@
 const integer = new Intl.NumberFormat('en', { maximumFractionDigits: 0 })
 const percent = new Intl.NumberFormat('en', { maximumFractionDigits: 1, signDisplay: 'exceptZero' })
+const relative = new Intl.RelativeTimeFormat('en', { numeric: 'always' })
 const calendar = new Intl.DateTimeFormat('en', {
   day: 'numeric',
   month: 'short',
@@ -26,6 +27,13 @@ export function date(value) {
 }
 export function timestamp(value) {
   return value ? `${clock.format(new Date(value))} UTC` : 'Awaiting collection'
+}
+export function relativeTime(value, currentTime) {
+  const minutes = (Date.parse(value) - currentTime) / 60_000
+  if (Math.abs(minutes) < 1) return minutes > 0 ? 'in less than a minute' : 'less than a minute ago'
+  if (Math.abs(minutes) < 60) return relative.format(Math.round(minutes), 'minute')
+  if (Math.abs(minutes) < 1440) return relative.format(Math.round(minutes / 60), 'hour')
+  return relative.format(Math.round(minutes / 1440), 'day')
 }
 export function duration(hours) {
   if (hours === null || hours === undefined) return 'Not available'
