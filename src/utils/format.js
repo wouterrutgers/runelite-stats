@@ -25,6 +25,14 @@ export function percentage(value) {
 export function date(value) {
   return value ? calendar.format(new Date(value)) : 'Not recorded'
 }
+export function dateRange(start, end) {
+  const startDate = new Date(start)
+  const endDate = new Date(end)
+  const month = new Intl.DateTimeFormat('en', { month: 'short', timeZone: 'UTC' })
+  const startYear =
+    startDate.getUTCFullYear() === endDate.getUTCFullYear() ? '' : ` ${startDate.getUTCFullYear()}`
+  return `${startDate.getUTCDate()} ${month.format(startDate)}${startYear} to ${endDate.getUTCDate()} ${month.format(endDate)} ${endDate.getUTCFullYear()}`
+}
 export function timestamp(value) {
   return value ? `${clock.format(new Date(value))} UTC` : 'Awaiting collection'
 }

@@ -10,7 +10,7 @@ import {
   Legend,
   Filler,
 } from 'chart.js'
-import { number, duration, date } from '../utils/format.js'
+import { number, duration, dateRange } from '../utils/format.js'
 Chart.register(LineController, LineElement, PointElement, LinearScale, Tooltip, Legend, Filler)
 const props = defineProps({
   rows: { type: Array, required: true },
@@ -109,7 +109,10 @@ function draw() {
           padding: 12,
           callbacks: {
             title(items) {
-              if (props.dateKey === 'weekEndedAt') return `Week ending ${date(items[0].parsed.x)}`
+              if (props.dateKey === 'weekEndedAt') {
+                const row = props.rows[items[0].dataIndex]
+                return dateRange(row.date, row.weekEndedAt)
+              }
               return (
                 new Intl.DateTimeFormat('en', {
                   dateStyle: 'medium',
