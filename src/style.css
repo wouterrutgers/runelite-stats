@@ -199,10 +199,52 @@ nav a.is-active {
   text-align: right;
   white-space: nowrap;
 }
-.collection-time span {
+.collection-time > span {
   display: block;
   margin-top: 5px;
   color: var(--muted);
+}
+.next-update {
+  position: relative;
+}
+.update-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  vertical-align: middle;
+}
+.update-info:hover,
+.update-info:focus-visible {
+  color: var(--accent);
+}
+.update-info-tooltip {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 10;
+  width: 280px;
+  max-width: calc(100vw - 36px);
+  padding: 10px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface-raised);
+  color: var(--text);
+  line-height: 1.5;
+  text-align: left;
+  white-space: normal;
+}
+.next-update:hover .update-info-tooltip,
+.next-update:focus-within .update-info-tooltip {
+  display: block;
 }
 .record-label {
   color: var(--muted);
@@ -1143,9 +1185,13 @@ tbody th {
     max-width: none;
     text-align: left;
   }
-  .collection-time span {
+  .collection-time > span {
     display: inline;
     margin-left: 12px;
+  }
+  .update-info-tooltip {
+    right: 50%;
+    transform: translateX(50%);
   }
   .dashboard-grid,
   .two-grid {
@@ -1203,7 +1249,7 @@ tbody th {
   .page-heading {
     padding: 28px 0 22px;
   }
-  .collection-time span {
+  .collection-time > span {
     display: block;
     margin: 4px 0 0;
   }

@@ -39,7 +39,31 @@ const trend = computed(() =>
       </div>
       <p v-if="data" class="collection-time">
         Updated {{ relativeTime(data.syncedAt, currentTime) }}
-        <span>Next update {{ relativeTime(nextUpdate, currentTime) }}</span>
+        <span class="next-update">
+          Next update {{ relativeTime(nextUpdate, currentTime) }}
+          <button
+            type="button"
+            class="update-info"
+            aria-label="About scheduled updates"
+            aria-describedby="update-schedule-note"
+            @click="$event.currentTarget.focus()"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <circle cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width="1.25" />
+              <path
+                d="M8 7.25V11"
+                stroke="currentColor"
+                stroke-width="1.25"
+                stroke-linecap="round"
+              />
+              <circle cx="8" cy="4.75" r="0.75" fill="currentColor" />
+            </svg>
+          </button>
+          <span id="update-schedule-note" class="update-info-tooltip" role="tooltip">
+            Update times are estimates. GitHub Actions may delay or skip scheduled updates during
+            periods of high demand.
+          </span>
+        </span>
       </p>
     </header>
     <DataState :loading="loading" :error="error" @retry="reload">
