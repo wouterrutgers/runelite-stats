@@ -2944,5 +2944,8 @@
   "overnight-flipper",
   "efficient-tears-of-guthix",
   "ground-item-entity-hider",
-  "item-value-fluctuation"
+  "item-value-fluctuation",
+  "chatty-npcs",
+  "combat-check",
+  "nex-chat-hider"
 ]
