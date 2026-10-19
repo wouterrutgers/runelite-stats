@@ -3008,5 +3008,9 @@
   "codex-bank-steward",
   "codex-quartermaster",
   "maxed-skill-progress-bar-hider",
-  "boss-hit-tracker"
+  "boss-hit-tracker",
+  "hungry-pet-hider",
+  "kebbit-tracker",
+  "modern-books",
+  "seed-vault-memory"
 ]
