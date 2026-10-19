@@ -3007,5 +3007,6 @@
   "portal-nexus-search",
   "codex-bank-steward",
   "codex-quartermaster",
-  "maxed-skill-progress-bar-hider"
+  "maxed-skill-progress-bar-hider",
+  "boss-hit-tracker"
 ]
