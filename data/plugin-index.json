@@ -3044,5 +3044,7 @@
   "ironman-helper-sync",
   "material-planner",
   "numeric-stats-plus",
-  "potion-storage"
+  "potion-storage",
+  "codex-autopilot",
+  "world-compass"
 ]
