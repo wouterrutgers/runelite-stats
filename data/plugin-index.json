@@ -3053,5 +3053,22 @@
   "daily-goals",
   "slayer-companion",
   "slayer-task-eta",
-  "souls-tracker"
+  "souls-tracker",
+  "afk-roulette",
+  "chugging-sound",
+  "codex-ironworks",
+  "ge-transaction-exporter",
+  "gptscape",
+  "grindset",
+  "instant-sleepwalkers",
+  "my-ammo-highlighter",
+  "my-drops",
+  "myscape",
+  "offerbook-sync",
+  "osrs-coach",
+  "poh-clue-teleports",
+  "regeneration-meter-enhanced",
+  "runepixels",
+  "tears-of-guthix-optimizer",
+  "trap-house-clan-plugin"
 ]
