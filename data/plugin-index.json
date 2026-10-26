@@ -3107,5 +3107,10 @@
   "clicklocked",
   "death-recap",
   "fancy-hitsplats",
-  "zero-to-max"
+  "zero-to-max",
+  "ba-cape-emote-timer",
+  "ba-cursor-timer",
+  "clear-dialogue",
+  "osrs-companion",
+  "slayer-suite"
 ]
