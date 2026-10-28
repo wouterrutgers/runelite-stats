@@ -3132,5 +3132,9 @@
   "osrs-map-companion",
   "tree-running",
   "poh-teleport-sorter",
-  "windmill-animation-smoothing"
+  "windmill-animation-smoothing",
+  "2-tick-skilling-helper",
+  "cushty",
+  "encounter-recorder",
+  "spin-that-boss"
 ]
