@@ -3141,5 +3141,11 @@
   "days-since-death",
   "farming-profit-tracker",
   "kc-log",
-  "death-replay"
+  "death-replay",
+  "agility-action-camera",
+  "customizable-bank-ui",
+  "gotr-aio",
+  "map-teleport-highlighter",
+  "slayer-ledger",
+  "widget-toggle"
 ]
