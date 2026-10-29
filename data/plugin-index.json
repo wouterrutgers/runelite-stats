@@ -3136,5 +3136,9 @@
   "2-tick-skilling-helper",
   "cushty",
   "encounter-recorder",
-  "spin-that-boss"
+  "spin-that-boss",
+  "chat-mentions",
+  "days-since-death",
+  "farming-profit-tracker",
+  "kc-log"
 ]
