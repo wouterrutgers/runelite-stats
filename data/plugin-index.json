@@ -3157,5 +3157,9 @@
   "gim-companion",
   "immersive-skilling",
   "rubium-miner",
-  "simplespec"
+  "simplespec",
+  "gielinor-wrapped",
+  "gim-logout-reminder",
+  "improved-looting",
+  "player-tags"
 ]
