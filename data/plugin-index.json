@@ -3209,5 +3209,8 @@
   "opacity-wheel",
   "osrsdatasync",
   "prayer-activate",
-  "region-object-markers"
+  "region-object-markers",
+  "player-notepad",
+  "runelite-plugin-toggler",
+  "selective-animation-smoothing"
 ]
