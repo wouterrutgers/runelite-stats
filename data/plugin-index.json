@@ -3217,5 +3217,11 @@
   "bank-filler-line-break",
   "dream-chasers-clan",
   "pvknee",
-  "swaputil"
+  "swaputil",
+  "afk-helper",
+  "colosseum-wave-spawn-ping",
+  "death-log",
+  "death-message-tracker",
+  "dot-tags",
+  "gilded-ledger"
 ]
