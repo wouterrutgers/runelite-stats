@@ -3232,5 +3232,11 @@
   "daily-item-goals",
   "interface-transparency",
   "runedefence",
-  "tfa-dry-tracker"
+  "tfa-dry-tracker",
+  "daily-task-generator",
+  "debt-tracker",
+  "how-many-more",
+  "location-sharer",
+  "poh-loading-tips",
+  "skill-goal-levels"
 ]
