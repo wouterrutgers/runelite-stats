@@ -3261,5 +3261,12 @@
   "tfa-mistake-tracker",
   "wizalch",
   "aldarin-villa-chests",
-  "ca-boss-checklist"
+  "ca-boss-checklist",
+  "boost-decay-hitsplats",
+  "collision-map",
+  "idle-bosses",
+  "inventory-quick-check",
+  "mta-improved",
+  "ultimate-slayer",
+  "xptempo"
 ]
