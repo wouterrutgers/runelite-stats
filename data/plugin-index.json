@@ -3282,5 +3282,15 @@
   "iron-herblore",
   "tfa-splits-tracker",
   "rebuild-planner",
-  "clean-screenshots"
+  "clean-screenshots",
+  "aquanite-helper",
+  "birdhouse-timer",
+  "check-dps",
+  "efficient-brutus",
+  "farm-run-optimizer",
+  "find-runners",
+  "hardcore-death-cannon",
+  "last-rites",
+  "potion-timer-overlay",
+  "seed-reminder"
 ]
