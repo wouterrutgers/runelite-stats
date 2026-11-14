@@ -3292,5 +3292,11 @@
   "hardcore-death-cannon",
   "last-rites",
   "potion-timer-overlay",
-  "seed-reminder"
+  "seed-reminder",
+  "auto-clip",
+  "cg-splits",
+  "herbwise",
+  "loadout-studio",
+  "osrs-armory",
+  "ranked-nh"
 ]
