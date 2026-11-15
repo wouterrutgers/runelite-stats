@@ -3299,5 +3299,9 @@
   "loadout-studio",
   "osrs-armory",
   "ranked-nh",
-  "streamer-popout-panels"
+  "streamer-popout-panels",
+  "compass-only",
+  "craftwise",
+  "toa-gear-inspector",
+  "world-filter-presets"
 ]
