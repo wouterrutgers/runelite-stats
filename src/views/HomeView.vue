@@ -11,7 +11,7 @@ const { data, error, loading, reload } = useDataset('summary.json')
 const currentTime = ref(Date.now())
 const nextUpdate = computed(function () {
   const next = new Date(currentTime.value)
-  next.setUTCHours(Math.floor(next.getUTCHours() / 6) * 6, 17, 0, 0)
+  next.setUTCHours(Math.floor(next.getUTCHours() / 6) * 6, 0, 0, 0)
   if (next.getTime() <= currentTime.value) next.setUTCHours(next.getUTCHours() + 6)
   return next.toISOString()
 })
