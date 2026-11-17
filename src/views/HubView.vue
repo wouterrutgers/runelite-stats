@@ -7,13 +7,7 @@ import MetricCard from '../components/MetricCard.vue'
 import TimeChart from '../components/TimeChart.vue'
 import DateRanges from '../components/DateRanges.vue'
 import PluginTable from '../components/PluginTable.vue'
-const { data, error, loading, reload } = useDataset([
-  'hub/summary.json',
-  'hub/weekly.json',
-  'hub/backlog.json',
-  'hub/latency.json',
-  'hub/authors.json',
-])
+const { data, error, loading, reload } = useDataset()
 const range = ref('6m')
 const weekly = computed(() =>
   data.value ? withinRange(data.value[1], range.value, data.value[0].syncedAt, 'weekEndedAt') : [],

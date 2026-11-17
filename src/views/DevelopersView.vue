@@ -4,7 +4,7 @@ import { useDataset } from '../composables/useDataset.js'
 import { number, date } from '../utils/format.js'
 import DataState from '../components/DataState.vue'
 import GrowthValue from '../components/GrowthValue.vue'
-const { data, error, loading, reload } = useDataset('developers.json')
+const { data, error, loading, reload } = useDataset()
 const search = ref('')
 const sort = ref('installs')
 const descending = ref(true)

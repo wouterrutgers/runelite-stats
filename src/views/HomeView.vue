@@ -7,7 +7,7 @@ import MetricCard from '../components/MetricCard.vue'
 import PluginList from '../components/PluginList.vue'
 import TimeChart from '../components/TimeChart.vue'
 import DateRanges from '../components/DateRanges.vue'
-const { data, error, loading, reload } = useDataset('summary.json')
+const { data, error, loading, reload } = useDataset()
 const currentTime = ref(Date.now())
 const nextUpdate = computed(function () {
   const next = new Date(currentTime.value)

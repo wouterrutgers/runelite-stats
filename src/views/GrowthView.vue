@@ -4,7 +4,7 @@ import { useDataset } from '../composables/useDataset.js'
 import DataState from '../components/DataState.vue'
 import PluginTable from '../components/PluginTable.vue'
 import DateRanges from '../components/DateRanges.vue'
-const { data, error, loading, reload } = useDataset(['plugins.json', 'growth.json'])
+const { data, error, loading, reload } = useDataset()
 const period = ref('7d')
 const ranking = ref('biggest')
 const tabs = [

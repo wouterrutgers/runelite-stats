@@ -2,7 +2,7 @@
 import { useDataset } from '../composables/useDataset.js'
 import DataState from '../components/DataState.vue'
 import PluginTable from '../components/PluginTable.vue'
-const { data, error, loading, reload } = useDataset('plugins.json')
+const { data, error, loading, reload } = useDataset()
 </script>
 <template>
   <div class="page">

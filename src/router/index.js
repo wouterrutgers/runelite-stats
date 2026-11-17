@@ -1,4 +1,7 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, loadRouteLocation } from 'vue-router'
+import { loadDataset } from '../composables/useDataset.js'
+import { datasetsForPath } from '../datasets.js'
+const prefetches = new Map()
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   scrollBehavior() {
@@ -43,6 +46,25 @@ const router = createRouter({
       meta: { title: 'Page not found' },
     },
   ],
+})
+export function prefetchRoute(location) {
+  const route = router.resolve(location)
+  if (!prefetches.has(route.path)) {
+    prefetches.set(
+      route.path,
+      Promise.all([
+        loadRouteLocation(route),
+        ...datasetsForPath(route.path).map(loadDataset),
+      ]).catch(function (error) {
+        prefetches.delete(route.path)
+        console.warn('Could not preload the page.', error)
+      }),
+    )
+  }
+  return prefetches.get(route.path)
+}
+router.beforeEach(function (to) {
+  prefetchRoute(to)
 })
 router.afterEach((to) => {
   document.title = `${to.meta.title} on RuneLite Hub Stats`

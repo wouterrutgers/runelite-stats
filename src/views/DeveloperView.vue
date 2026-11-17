@@ -1,6 +1,5 @@
 <script setup>
 import { watch } from 'vue'
-import { useRoute } from 'vue-router'
 import { useDataset } from '../composables/useDataset.js'
 import { number, date } from '../utils/format.js'
 import DataState from '../components/DataState.vue'
@@ -8,13 +7,14 @@ import MetricCard from '../components/MetricCard.vue'
 import GrowthValue from '../components/GrowthValue.vue'
 import PluginTable from '../components/PluginTable.vue'
 import ActivityList from '../components/ActivityList.vue'
-const route = useRoute()
-const { data, error, loading, reload } = useDataset(
-  () => `developer/${encodeURIComponent(route.params.slug)}.json`,
+const { data, error, loading, reload } = useDataset()
+watch(
+  data,
+  function (developer) {
+    if (developer) document.title = `${developer.name} on RuneLite Hub Stats`
+  },
+  { immediate: true },
 )
-watch(data, (developer) => {
-  if (developer) document.title = `${developer.name} on RuneLite Hub Stats`
-})
 </script>
 <template>
   <div class="page">

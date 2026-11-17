@@ -1,6 +1,5 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import { useDataset } from '../composables/useDataset.js'
 import { number, date, timestamp, withinRange } from '../utils/format.js'
 import DataState from '../components/DataState.vue'
@@ -9,14 +8,15 @@ import GrowthValue from '../components/GrowthValue.vue'
 import DateRanges from '../components/DateRanges.vue'
 import TimeChart from '../components/TimeChart.vue'
 import ActivityList from '../components/ActivityList.vue'
-const route = useRoute()
-const { data, error, loading, reload } = useDataset(
-  () => `plugin/${encodeURIComponent(route.params.internalName)}.json`,
-)
+const { data, error, loading, reload } = useDataset()
 const range = ref('30d')
-watch(data, (plugin) => {
-  if (plugin) document.title = `${plugin.displayName} on RuneLite Hub Stats`
-})
+watch(
+  data,
+  function (plugin) {
+    if (plugin) document.title = `${plugin.displayName} on RuneLite Hub Stats`
+  },
+  { immediate: true },
+)
 const history = computed(() => {
   if (!data.value) return []
   const rows = range.value === '48h' ? data.value.history.recent : data.value.history.daily
