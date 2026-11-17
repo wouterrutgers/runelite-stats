@@ -1,4 +1,6 @@
 export const DAY = 86_400_000
+// Allow collection timing jitter without skipping a six hour observation.
+export const COMPARISON_TOLERANCE = 5 * 60_000
 export const PERIODS = { '24h': 1, '7d': 7, '30d': 30, '180d': 180, '1y': 365 }
 export const RANKING_THRESHOLDS = {
   percentageCurrent: 100,

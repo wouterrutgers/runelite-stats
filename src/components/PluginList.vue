@@ -30,9 +30,9 @@ defineProps({
       <span class="plugin-list-name">
         <RouterLink :to="`/plugin/${plugin.internalName}`">{{ plugin.displayName }}</RouterLink>
         <small>
-          <template v-if="plugin.author">By {{ plugin.author }}</template>
+          <template v-if="showDate">Added on {{ date(plugin.createdAt) }}</template>
+          <template v-else-if="plugin.author">By {{ plugin.author }}</template>
           <template v-else>{{ plugin.internalName }}</template>
-          <template v-if="showDate">. Added on {{ date(plugin.createdAt) }}.</template>
         </small>
       </span>
       <strong v-if="metric === 'installs'" class="numeric"

@@ -18,19 +18,3 @@ function prefetchLink(event) {
 for (const event of ['pointerover', 'focusin', 'pointerdown']) {
   document.addEventListener(event, prefetchLink)
 }
-
-function whenIdle() {
-  return new Promise(function (resolve) {
-    if ('requestIdleCallback' in window) window.requestIdleCallback(resolve)
-    else setTimeout(resolve, 0)
-  })
-}
-async function prefetchNavigation() {
-  await router.isReady()
-  await prefetchRoute(router.currentRoute.value)
-  for (const link of document.querySelectorAll('.site-header nav a')) {
-    await whenIdle()
-    await prefetchRoute(link.hash.slice(1))
-  }
-}
-prefetchNavigation()

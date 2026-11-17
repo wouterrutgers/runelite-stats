@@ -46,15 +46,18 @@ const latency = computed(() =>
             "
             accent
           /><MetricCard
-            label="Active Hub plugins"
+            label="Enabled Hub entries"
             :value="number(data[0].currentPlugins)"
-            note="Excluding disabled plugins"
+            note="Excluding disabled entries"
           /><MetricCard label="Total merged PRs" :value="number(data[0].totalMerged)" /><MetricCard
-            label="Median resolution time"
+            label="Median resolution (all time)"
             :value="duration(data[0].medianHours)"
             :note="`90th percentile: ${duration(data[0].p90Hours)}`"
           />
         </section>
+        <p class="panel-note">
+          Resolution time covers all recorded pull requests, from opening to merge or closure.
+        </p>
         <div class="section-heading page-section-heading">
           <div>
             <h2>Weekly activity</h2>
@@ -71,8 +74,8 @@ const latency = computed(() =>
               :rows="weekly"
               :series="[
                 { key: 'opened', label: 'Opened' },
-                { key: 'merged', label: 'merged', color: '#78c69b' },
-                { key: 'closed', label: 'closed without merge', color: '#ee8e96' },
+                { key: 'merged', label: 'Merged', color: '#78c69b' },
+                { key: 'closed', label: 'Closed without merge', color: '#ee8e96' },
               ]"
               date-key="weekEndedAt"
               label="Weekly Plugin Hub PR activity"

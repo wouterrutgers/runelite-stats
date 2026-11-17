@@ -25,6 +25,15 @@ body {
   margin: 0;
   min-width: 320px;
 }
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+main {
+  flex: 1;
+  min-width: 0;
+}
 button,
 input {
   font: inherit;
@@ -198,35 +207,45 @@ nav a.is-active {
   margin: 0;
   text-align: right;
   white-space: nowrap;
+  color: var(--muted);
 }
-.collection-time > span {
+.collection-time .next-update {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-top: 5px;
+  align-items: center;
+  margin-top: 3px;
   color: var(--muted);
 }
 .next-update {
   position: relative;
 }
 .update-info {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
   margin-left: 2px;
+}
+.update-info summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: transparent;
   color: var(--muted);
   line-height: 0;
+  list-style: none;
 }
-.update-info:hover,
-.update-info:focus-visible {
+.update-info summary::-webkit-details-marker {
+  display: none;
+}
+.update-info summary:hover,
+.update-info summary:focus-visible {
   color: var(--accent);
 }
 .update-info-tooltip {
-  display: none;
   position: absolute;
   top: 100%;
   right: 0;
@@ -241,10 +260,7 @@ nav a.is-active {
   line-height: 1.5;
   text-align: left;
   white-space: normal;
-}
-.update-info:hover + .update-info-tooltip,
-.update-info:focus-visible + .update-info-tooltip {
-  display: block;
+  font-size: 0.75rem;
 }
 .record-label {
   color: var(--muted);
@@ -336,7 +352,7 @@ nav a.is-active {
   line-height: 1.4;
   margin: 8px 0 6px;
   letter-spacing: -0.03em;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 .metric-card.accent .metric-value {
   color: var(--accent);
@@ -349,6 +365,7 @@ nav a.is-active {
   display: flex;
   align-items: center;
   color: var(--muted);
+  white-space: normal;
 }
 .metric-note {
   font-size: 0.75rem;
@@ -472,6 +489,33 @@ nav a.is-active {
   color: var(--muted);
   margin-top: 12px;
 }
+.chart-data {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.chart-observation {
+  display: block;
+}
+.chart-data summary {
+  width: fit-content;
+  padding: 4px 0;
+}
+.chart-data summary:hover {
+  color: var(--text);
+}
+.chart-data-scroll {
+  max-height: 300px;
+  margin-top: 10px;
+}
+.chart-data caption {
+  padding: 10px 0;
+  text-align: left;
+  color: var(--text);
+}
+.chart-data tbody th {
+  white-space: nowrap;
+}
 .plugin-icon {
   display: flex;
   align-items: center;
@@ -593,6 +637,7 @@ nav a.is-active {
   font-size: 0.8125rem;
 }
 .site-footer {
+  width: calc(100% - 64px);
   max-width: 1316px;
   margin: 0 auto;
   padding: 22px 0 30px;
@@ -661,6 +706,8 @@ nav a.is-active {
   overflow: auto;
   width: 100%;
   scrollbar-color: var(--border-strong) var(--surface);
+  container-type: inline-size;
+  scroll-margin-top: 16px;
 }
 table {
   width: 100%;
@@ -919,6 +966,9 @@ tbody th {
   padding: 14px 0;
   border-top: 1px solid var(--border);
 }
+.activity-toggle {
+  margin-top: 14px;
+}
 .activity-list li:first-child {
   border-top: 0;
 }
@@ -1131,9 +1181,6 @@ tbody th {
   .source-link {
     display: none;
   }
-  .site-footer {
-    margin: 0 32px;
-  }
   .metrics-grid.six {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1185,14 +1232,12 @@ tbody th {
     max-width: none;
     text-align: left;
   }
-  .collection-time > span {
-    display: inline-flex;
+  .collection-time .next-update {
     justify-content: flex-start;
-    margin-left: 12px;
   }
   .update-info-tooltip {
-    right: 50%;
-    transform: translateX(50%);
+    left: 0;
+    right: auto;
   }
   .dashboard-grid,
   .two-grid {
@@ -1250,10 +1295,6 @@ tbody th {
   .page-heading {
     padding: 28px 0 22px;
   }
-  .collection-time > span {
-    display: flex;
-    margin: 4px 0 0;
-  }
   .metrics-grid.six,
   .metrics-grid.three {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1265,7 +1306,7 @@ tbody th {
     font-size: 0.75rem;
   }
   .metric-value {
-    font-size: 1.32rem;
+    font-size: clamp(1rem, 5.2vw, 1.32rem);
   }
   .metric-value.pending {
     min-height: 1.85rem;
@@ -1329,7 +1370,7 @@ tbody th {
     width: 15px;
   }
   .site-footer {
-    margin: 0 18px;
+    width: calc(100% - 36px);
     flex-direction: column;
     gap: 12px;
     padding: 20px 0 25px;
@@ -1355,17 +1396,6 @@ tbody th {
   thead th {
     padding-left: 10px;
     padding-right: 10px;
-  }
-  .plugin-table thead th:first-child,
-  .plugin-table .plugin-cell {
-    position: sticky;
-    left: 0;
-    z-index: 1;
-    background: var(--background);
-    border-right: 1px solid var(--border);
-  }
-  .plugin-table thead th:first-child {
-    background: var(--surface);
   }
   .plugin-heading {
     flex-wrap: wrap;
@@ -1417,6 +1447,59 @@ tbody th {
   }
   .about-grid aside .detail-bottom {
     margin-top: 28px;
+  }
+}
+@container (width < 900px) {
+  .plugin-table thead th:first-child,
+  .plugin-table .plugin-cell,
+  .developer-table thead th:first-child,
+  .developer-table tbody th {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--background);
+    border-right: 1px solid var(--border);
+  }
+  .plugin-table thead th:first-child,
+  .developer-table thead th:first-child {
+    background: var(--surface);
+  }
+}
+@container (width < 360px) {
+  .plugin-cell,
+  .developer-table tbody th {
+    min-width: 140px;
+    max-width: 140px;
+    width: 140px;
+    overflow-wrap: anywhere;
+  }
+  .plugin-cell-details,
+  .plugin-cell small,
+  .plugin-cell p {
+    max-width: 120px;
+  }
+  .plugin-cell .plugin-icon {
+    display: none;
+  }
+}
+@media (pointer: coarse) {
+  .range-control button,
+  .tab-control button,
+  .pagination button,
+  thead button,
+  nav a,
+  .chart-data summary {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .search-field input {
+    min-height: 44px;
+    font-size: 1rem;
+  }
+  .update-info summary::after {
+    position: absolute;
+    inset: -10px;
+    content: '';
   }
 }
 @media (prefers-reduced-motion: reduce) {

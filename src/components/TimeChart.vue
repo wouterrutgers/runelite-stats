@@ -10,7 +10,7 @@ import {
   Legend,
   Filler,
 } from 'chart.js'
-import { number, duration, dateRange } from '../utils/format.js'
+import { number, duration, dateRange, timestamp } from '../utils/format.js'
 Chart.register(LineController, LineElement, PointElement, LinearScale, Tooltip, Legend, Filler)
 const props = defineProps({
   rows: { type: Array, required: true },
@@ -23,6 +23,7 @@ const props = defineProps({
   hideSummary: Boolean,
 })
 const canvas = ref(null)
+const showData = ref(false)
 const descriptionId = useId()
 let chart
 const latest = computed(() => props.rows.at(-1))
@@ -188,8 +189,57 @@ onBeforeUnmount(() => chart?.destroy())
       >
     </div>
     <figcaption v-if="!hideSummary" :id="descriptionId" class="chart-context">
-      <template v-if="latest">{{ summary }}</template>
+      <template v-if="latest">
+        {{ summary }}
+        <span class="chart-observation">{{
+          dateKey === 'weekEndedAt'
+            ? `Week: ${dateRange(latest.date, latest.weekEndedAt)}`
+            : `Observed ${timestamp(latest[dateKey])}`
+        }}</span>
+      </template>
       <span v-else>{{ label }}</span>
     </figcaption>
   </figure>
+  <details v-if="rows.length" class="chart-data" @toggle="showData = $event.target.open">
+    <summary>
+      View data<span class="sr-only"> for {{ label }}</span>
+    </summary>
+    <div
+      v-if="showData"
+      class="table-scroll chart-data-scroll"
+      tabindex="0"
+      role="region"
+      :aria-label="`${label} data`"
+    >
+      <table>
+        <caption>
+          {{
+            label
+          }}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ dateKey === 'weekEndedAt' ? 'Week' : 'Observed at (UTC)' }}</th>
+            <th v-for="seriesItem in series" :key="seriesItem.key" scope="col">
+              {{ seriesItem.label }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in rows" :key="row[dateKey]">
+            <th scope="row">
+              {{
+                dateKey === 'weekEndedAt'
+                  ? dateRange(row.date, row.weekEndedAt)
+                  : timestamp(row[dateKey])
+              }}
+            </th>
+            <td v-for="seriesItem in series" :key="seriesItem.key" class="numeric">
+              {{ unit === 'hours' ? duration(row[seriesItem.key]) : number(row[seriesItem.key]) }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
 </template>

@@ -33,6 +33,11 @@
             Author pages follow the credits shown in each plugin’s listing. When a plugin has more
             than one credited author, their totals can overlap.
           </p>
+          <p>
+            Listed plugins are shown in the RuneLite client. The directory also includes disabled
+            and historical plugins, marked in the list. Hub activity counts enabled entries in the
+            Plugin Hub repository, which can differ from the client listing.
+          </p>
         </section>
         <section>
           <h2>Where the information comes from</h2>

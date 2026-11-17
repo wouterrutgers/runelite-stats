@@ -1,5 +1,6 @@
 import {
   DAY,
+  COMPARISON_TOLERANCE,
   PERIODS,
   RANKING_THRESHOLDS,
   requireValue,
@@ -87,7 +88,7 @@ export function growthForPlugin(plugin, position, snapshots, now, days) {
   const target = Date.parse(now) - days * DAY
   const baseline = snapshots.findLast(
     (row) =>
-      Date.parse(snapshotTime(row)) <= target &&
+      Date.parse(snapshotTime(row)) <= target + COMPARISON_TOLERANCE &&
       row.counts[position] !== null &&
       row.counts[position] !== undefined,
   )

@@ -1,6 +1,7 @@
 <script setup>
-import { computed, ref, watch, useId } from 'vue'
+import { computed, useId } from 'vue'
 import { number, date } from '../utils/format.js'
+import { useTableState } from '../composables/useTableState.js'
 import GrowthValue from './GrowthValue.vue'
 const props = defineProps({
   plugins: { type: Array, required: true },
@@ -8,10 +9,6 @@ const props = defineProps({
   defaultSort: { type: String, default: 'installs' },
 })
 const identifier = useId()
-const search = ref('')
-const sort = ref(props.defaultSort)
-const descending = ref(true)
-const page = ref(1)
 const pageSize = 30
 const searchable = computed(() =>
   props.plugins.map((plugin) => ({
@@ -30,21 +27,22 @@ const searchable = computed(() =>
 const columns = computed(() => [
   { key: 'name', label: 'Plugin' },
   { key: 'installs', label: 'Active installs' },
-  { key: 'high', label: 'Observed high' },
   ...(props.period
     ? [
         { key: props.period, label: `${props.period} change` },
         { key: 'percentage', label: `${props.period} growth` },
-        { key: 'comparison', label: 'Baseline installs' },
       ]
     : ['24h', '7d', '30d'].map((period) => ({ key: period, label: `${period} change` }))),
   { key: 'createdAt', label: 'Released' },
   { key: 'lastUpdatedAt', label: 'Updated' },
 ])
+const { search, sort, descending, requestedPage, table, sortBy, changePage } = useTableState(
+  props.defaultSort,
+  () => columns.value.map((column) => column.key),
+)
 function value(plugin, key) {
   if (key === 'name') return plugin.displayName.toLocaleLowerCase()
-  if (key === 'high') return plugin.high?.count ?? null
-  if (key === 'percentage' || key === 'comparison') return plugin.growth[props.period][key]
+  if (key === 'percentage') return plugin.growth[props.period].percentage
   if (plugin.growth[key]) return plugin.growth[key].change
   return plugin[key]
 }
@@ -67,19 +65,10 @@ const matching = computed(() => {
   })
 })
 const pages = computed(() => Math.max(1, Math.ceil(matching.value.length / pageSize)))
+const page = computed(() => Math.min(requestedPage.value, pages.value))
 const visible = computed(() =>
   matching.value.slice((page.value - 1) * pageSize, page.value * pageSize),
 )
-watch([search, sort, descending, () => props.plugins], () => {
-  page.value = 1
-})
-function sortBy(key) {
-  if (sort.value === key) descending.value = !descending.value
-  else {
-    sort.value = key
-    descending.value = key !== 'name'
-  }
-}
 </script>
 
 <template>
@@ -97,7 +86,13 @@ function sortBy(key) {
       <span class="muted" aria-live="polite">{{ number(matching.length) }} plugins</span>
     </div>
     <p class="table-hint">Scroll the table to see all columns</p>
-    <div class="table-scroll" tabindex="0" role="region" aria-label="Plugin statistics table">
+    <div
+      ref="table"
+      class="table-scroll"
+      tabindex="0"
+      role="region"
+      aria-label="Plugin statistics table"
+    >
       <table class="plugin-table">
         <caption class="sr-only">
           Plugin installs, growth and publication dates. Select a column heading to sort.
@@ -107,6 +102,7 @@ function sortBy(key) {
             <th
               v-for="column in columns"
               :key="column.key"
+              scope="col"
               :aria-sort="sort === column.key ? (descending ? 'descending' : 'ascending') : 'none'"
             >
               <button @click="sortBy(column.key)">
@@ -120,7 +116,7 @@ function sortBy(key) {
         </thead>
         <tbody>
           <tr v-for="plugin in visible" :key="plugin.internalName">
-            <td class="plugin-cell">
+            <th scope="row" class="plugin-cell">
               <div class="plugin-cell-content">
                 <span class="plugin-icon" aria-hidden="true">
                   <img
@@ -138,17 +134,16 @@ function sortBy(key) {
                   }}</RouterLink
                   ><span v-if="plugin.disabled" class="badge">Disabled</span
                   ><span v-else-if="!plugin.current" class="badge">Historical</span
+                  ><span v-else-if="!plugin.available" class="badge">Unavailable</span
                   ><small>{{ plugin.author || plugin.internalName }}</small>
                   <p>{{ plugin.description }}</p>
                 </div>
               </div>
-            </td>
+            </th>
             <td class="numeric">{{ number(plugin.installs) }}</td>
-            <td class="numeric">{{ number(plugin.high?.count) }}</td>
             <template v-if="period"
               ><td><GrowthValue :growth="plugin.growth[period]" /></td>
-              <td><GrowthValue :growth="plugin.growth[period]" percent /></td>
-              <td class="numeric">{{ number(plugin.growth[period].comparison) }}</td></template
+              <td><GrowthValue :growth="plugin.growth[period]" percent /></td></template
             ><template v-else
               ><td v-for="growthPeriod in ['24h', '7d', '30d']" :key="growthPeriod">
                 <GrowthValue :growth="plugin.growth[growthPeriod]" /></td
@@ -165,8 +160,8 @@ function sortBy(key) {
     <div class="pagination">
       <span>Page {{ page }} of {{ pages }}</span>
       <div>
-        <button :disabled="page === 1" @click="page--">Previous</button
-        ><button :disabled="page === pages" @click="page++">Next</button>
+        <button :disabled="page === 1" @click="changePage(page - 1)">Previous</button
+        ><button :disabled="page === pages" @click="changePage(page + 1)">Next</button>
       </div>
     </div>
   </div>

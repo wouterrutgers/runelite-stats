@@ -1,14 +1,12 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, useId } from 'vue'
 import { useDataset } from '../composables/useDataset.js'
+import { useTableState } from '../composables/useTableState.js'
 import { number, date } from '../utils/format.js'
 import DataState from '../components/DataState.vue'
 import GrowthValue from '../components/GrowthValue.vue'
 const { data, error, loading, reload } = useDataset()
-const search = ref('')
-const sort = ref('installs')
-const descending = ref(true)
-const page = ref(1)
+const identifier = useId()
 const columns = [
   { key: 'name', label: 'Developer' },
   { key: 'pluginCount', label: 'Plugins' },
@@ -18,6 +16,10 @@ const columns = [
   { key: 'firstPublishedAt', label: 'First publication' },
   { key: 'lastUpdatedAt', label: 'Latest update' },
 ]
+const { search, sort, descending, requestedPage, table, sortBy, changePage } = useTableState(
+  'installs',
+  () => columns.map((column) => column.key),
+)
 const filtered = computed(() =>
   (data.value || [])
     .filter((developer) =>
@@ -36,17 +38,8 @@ const filtered = computed(() =>
     }),
 )
 const pages = computed(() => Math.max(1, Math.ceil(filtered.value.length / 40)))
+const page = computed(() => Math.min(requestedPage.value, pages.value))
 const visible = computed(() => filtered.value.slice((page.value - 1) * 40, page.value * 40))
-watch([search, sort, descending], () => {
-  page.value = 1
-})
-function sortBy(key) {
-  if (sort.value === key) descending.value = !descending.value
-  else {
-    sort.value = key
-    descending.value = key !== 'name'
-  }
-}
 </script>
 <template>
   <div class="page">
@@ -57,17 +50,25 @@ function sortBy(key) {
     <DataState :loading="loading" :error="error" @retry="reload"
       ><section v-if="data" class="panel table-panel">
         <div class="table-toolbar">
-          <label class="search-field"
+          <label class="search-field" :for="`${identifier}-search`"
             ><span aria-hidden="true">⌕</span
             ><input
+              :id="`${identifier}-search`"
               v-model="search"
               type="search"
               placeholder="Find a developer…"
               aria-label="Search developers" /></label
-          ><span class="muted">{{ number(filtered.length) }} developers</span>
+          ><span class="muted" aria-live="polite">{{ number(filtered.length) }} developers</span>
         </div>
-        <div class="table-scroll" tabindex="0" role="region" aria-label="Developer statistics">
-          <table>
+        <p class="table-hint">Scroll the table to see all columns</p>
+        <div
+          ref="table"
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="Developer statistics"
+        >
+          <table class="developer-table">
             <caption class="sr-only">
               Developers ranked by combined plugin installs
             </caption>
@@ -76,6 +77,7 @@ function sortBy(key) {
                 <th
                   v-for="column in columns"
                   :key="column.key"
+                  scope="col"
                   :aria-sort="
                     sort === column.key ? (descending ? 'descending' : 'ascending') : 'none'
                   "
@@ -108,8 +110,8 @@ function sortBy(key) {
         <div class="pagination">
           <span>Page {{ page }} of {{ pages }}</span>
           <div>
-            <button :disabled="page === 1" @click="page--">Previous</button
-            ><button :disabled="page === pages" @click="page++">Next</button>
+            <button :disabled="page === 1" @click="changePage(page - 1)">Previous</button
+            ><button :disabled="page === pages" @click="changePage(page + 1)">Next</button>
           </div>
         </div>
       </section></DataState

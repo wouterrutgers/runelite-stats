@@ -1,5 +1,13 @@
 import { createHash } from 'node:crypto'
-import { DAY, PERIODS, RANKING_THRESHOLDS, quantile, snapshotTime, weekStart } from './config.js'
+import {
+  DAY,
+  COMPARISON_TOLERANCE,
+  PERIODS,
+  RANKING_THRESHOLDS,
+  quantile,
+  snapshotTime,
+  weekStart,
+} from './config.js'
 import { classifyPullRequest, pluginFileChanges } from './github.js'
 import { pluginGrowth, rankPlugins } from './installs.js'
 
@@ -319,6 +327,7 @@ export function buildDatasets(source) {
   const directoryByIdentifier = new Map(directory.map((plugin) => [plugin.internalName, plugin]))
   const byIdentifier = new Map(plugins.map((plugin) => [plugin.internalName, plugin]))
   const growth = {
+    historyStartedAt: snapshots.length ? snapshotTime(snapshots[0]) : null,
     thresholds: RANKING_THRESHOLDS,
     periods: Object.fromEntries(
       Object.keys(PERIODS).map((period) => [
@@ -376,7 +385,7 @@ export function buildDatasets(source) {
   ]
   const totalInstalls = plugins.reduce((sum, plugin) => sum + (plugin.installs || 0), 0)
   const baseline = totalHistory.findLast(
-    (row) => Date.parse(row.timestamp) <= Date.parse(now) - 7 * DAY,
+    (row) => Date.parse(row.timestamp) <= Date.parse(now) - 7 * DAY + COMPARISON_TOLERANCE,
   )
   const active = plugins
     .filter((plugin) => plugin.current && plugin.activity.updates90d > 0)

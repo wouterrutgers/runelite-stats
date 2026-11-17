@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 const main = ref(null)
 watch(
-  () => route.fullPath,
+  () => route.path,
   async () => {
     await nextTick()
     main.value?.focus({ preventScroll: true })
@@ -21,9 +21,33 @@ watch(
       </RouterLink>
       <nav aria-label="Main navigation">
         <RouterLink to="/" exact-active-class="is-active" active-class="">Overview</RouterLink>
-        <RouterLink to="/plugins" active-class="is-active">Plugins</RouterLink>
+        <RouterLink
+          to="/plugins"
+          active-class="is-active"
+          :class="{ 'is-active': route.path.startsWith('/plugin/') }"
+          :aria-current="
+            route.path.startsWith('/plugin/')
+              ? 'location'
+              : route.path === '/plugins'
+                ? 'page'
+                : undefined
+          "
+          >Plugins</RouterLink
+        >
         <RouterLink to="/growth" active-class="is-active">Growth</RouterLink>
-        <RouterLink to="/developers" active-class="is-active">Developers</RouterLink>
+        <RouterLink
+          to="/developers"
+          active-class="is-active"
+          :class="{ 'is-active': route.path.startsWith('/developer/') }"
+          :aria-current="
+            route.path.startsWith('/developer/')
+              ? 'location'
+              : route.path === '/developers'
+                ? 'page'
+                : undefined
+          "
+          >Developers</RouterLink
+        >
         <RouterLink to="/hub" active-class="is-active">Hub activity</RouterLink>
         <RouterLink to="/about" active-class="is-active">About</RouterLink>
       </nav>

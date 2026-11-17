@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useDataset } from '../composables/useDataset.js'
-import { number, date, relativeTime, duration, withinRange } from '../utils/format.js'
+import { number, date, relativeTime, withinRange } from '../utils/format.js'
 import DataState from '../components/DataState.vue'
 import MetricCard from '../components/MetricCard.vue'
 import PluginList from '../components/PluginList.vue'
@@ -35,41 +35,38 @@ const trend = computed(() =>
     <header class="page-heading overview-heading">
       <div>
         <h1>Plugin Hub statistics</h1>
-        <p>RuneLite Plugin Hub popularity, growth and review statistics</p>
+        <p>Track RuneLite Plugin Hub popularity, new releases and install growth.</p>
       </div>
-      <p v-if="data" class="collection-time">
-        Updated {{ relativeTime(data.syncedAt, currentTime) }}
-        <span class="next-update">
+      <div v-if="data" class="collection-time">
+        <p>Updated {{ relativeTime(data.syncedAt, currentTime) }}</p>
+        <div class="next-update">
           Next update {{ relativeTime(nextUpdate, currentTime) }}
-          <button
-            type="button"
+          <details
             class="update-info"
-            aria-label="About scheduled updates"
-            aria-describedby="update-schedule-note"
+            @keydown.esc.stop.prevent="$event.currentTarget.open = false"
           >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <circle cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width="1.25" />
-              <path
-                d="M8 7.25V11"
-                stroke="currentColor"
-                stroke-width="1.25"
-                stroke-linecap="round"
-              />
-              <circle cx="8" cy="4.75" r="0.75" fill="currentColor" />
-            </svg>
-          </button>
-          <span id="update-schedule-note" class="update-info-tooltip" role="tooltip">
-            Update times are estimates. GitHub Actions may delay or skip scheduled updates during
-            periods of high demand.
-          </span>
-        </span>
-      </p>
+            <summary aria-label="About scheduled updates">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width="1.25" />
+                <path
+                  d="M8 7.25V11"
+                  stroke="currentColor"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                />
+                <circle cx="8" cy="4.75" r="0.75" fill="currentColor" />
+              </svg>
+            </summary>
+            <p class="update-info-tooltip">Data refreshes at 00:00, 06:00, 12:00 and 18:00 UTC.</p>
+          </details>
+        </div>
+      </div>
     </header>
     <DataState :loading="loading" :error="error" @retry="reload">
       <template v-if="data">
-        <section class="metrics-grid six" aria-label="Plugin Hub totals">
+        <section class="metrics-grid four" aria-label="Plugin Hub totals">
           <MetricCard label="Active installs" :value="number(data.totalInstalls)" accent />
-          <MetricCard label="Current plugins" :value="number(data.pluginCount)" />
+          <MetricCard label="Listed plugins" :value="number(data.pluginCount)" />
           <MetricCard
             label="7 day install change"
             :value="
@@ -79,8 +76,6 @@ const trend = computed(() =>
             "
           />
           <MetricCard label="Plugins added in 30 days" :value="number(data.hub.added30d)" />
-          <MetricCard label="PRs merged last week" :value="number(data.hub.mergedLastWeek)" />
-          <MetricCard label="Median resolution" :value="duration(data.hub.medianHours)" />
         </section>
         <p v-if="data.growth7d === null" class="history-note">
           Install history starts {{ date(data.historyStartedAt) }}. A 7d comparison is not available
@@ -105,37 +100,6 @@ const trend = computed(() =>
           </section>
         </div>
 
-        <div class="dashboard-grid detail-bottom">
-          <section class="panel">
-            <div class="section-heading">
-              <h2>Total active installs</h2>
-              <DateRanges v-model="range" :options="['7d', '30d', '6m', '1y', 'All']" />
-            </div>
-            <TimeChart
-              :rows="trend"
-              :series="[{ key: 'total', label: 'Active installs' }]"
-              label="Total active Plugin Hub installs"
-              hide-summary
-            />
-          </section>
-          <section class="panel">
-            <div class="section-heading">
-              <h2>Pull requests</h2>
-              <RouterLink class="text-link" to="/hub">Hub activity</RouterLink>
-            </div>
-            <TimeChart
-              :rows="data.weekly"
-              :series="[
-                { key: 'merged', label: 'Merged' },
-                { key: 'backlog', label: 'Open backlog' },
-              ]"
-              date-key="weekEndedAt"
-              label="Plugin Hub merged PRs and open backlog"
-              compact
-            />
-          </section>
-        </div>
-
         <div class="two-grid detail-bottom">
           <section class="panel">
             <div class="section-heading">
@@ -152,6 +116,19 @@ const trend = computed(() =>
             <PluginList :plugins="data.fastest" metric="percentage" />
           </section>
         </div>
+
+        <section class="panel detail-bottom">
+          <div class="section-heading">
+            <h2>Total active installs</h2>
+            <DateRanges v-model="range" :options="['7d', '30d', '6m', '1y', 'All']" />
+          </div>
+          <TimeChart
+            :rows="trend"
+            :series="[{ key: 'total', label: 'Active installs' }]"
+            label="Total active Plugin Hub installs"
+            hide-summary
+          />
+        </section>
       </template>
     </DataState>
   </div>

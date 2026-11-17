@@ -1,6 +1,16 @@
 <script setup>
+import { computed, ref, watch, useId } from 'vue'
 import { date, duration } from '../utils/format.js'
-defineProps({ records: { type: Array, required: true }, complete: Boolean })
+const props = defineProps({ records: { type: Array, required: true }, complete: Boolean })
+const identifier = useId()
+const expanded = ref(false)
+const visible = computed(() => (expanded.value ? props.records : props.records.slice(0, 5)))
+watch(
+  () => props.records,
+  () => {
+    expanded.value = false
+  },
+)
 </script>
 <template>
   <p v-if="!complete" class="notice">
@@ -8,8 +18,8 @@ defineProps({ records: { type: Array, required: true }, complete: Boolean })
     historical backfill.
   </p>
   <p v-else-if="!records.length" class="empty-inline">No associated pull requests were found.</p>
-  <ol v-else class="activity-list">
-    <li v-for="record in records" :key="record.number">
+  <ol v-else :id="identifier" class="activity-list">
+    <li v-for="record in visible" :key="record.number">
       <span class="activity-dot" :class="record.state.toLowerCase()" aria-hidden="true"></span>
       <div class="activity-content">
         <div class="activity-title">
@@ -34,4 +44,13 @@ defineProps({ records: { type: Array, required: true }, complete: Boolean })
       </div>
     </li>
   </ol>
+  <button
+    v-if="complete && records.length > 5"
+    class="button activity-toggle"
+    :aria-expanded="expanded"
+    :aria-controls="identifier"
+    @click="expanded = !expanded"
+  >
+    {{ expanded ? 'Show fewer changes' : `Show all ${records.length} changes` }}
+  </button>
 </template>

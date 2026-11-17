@@ -143,7 +143,7 @@ const markers = computed(
               <div>
                 <h2>Development activity</h2>
               </div>
-              <span class="badge">Latest 30 PRs</span>
+              <span class="badge">Recent pull requests</span>
             </div>
             <ActivityList :records="data.development.recent" :complete="data.githubComplete" />
           </section>

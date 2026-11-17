@@ -1,11 +1,17 @@
 import { createRouter, createWebHashHistory, loadRouteLocation } from 'vue-router'
+import { nextTick } from 'vue'
 import { loadDataset } from '../composables/useDataset.js'
 import { datasetsForPath } from '../datasets.js'
 const prefetches = new Map()
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
-  scrollBehavior() {
-    return { top: 0 }
+  async scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      await prefetchRoute(to)
+      await nextTick()
+      return savedPosition
+    }
+    return to.path === from.path ? false : { top: 0 }
   },
   routes: [
     { path: '/', component: () => import('../views/HomeView.vue'), meta: { title: 'Overview' } },
@@ -66,7 +72,8 @@ export function prefetchRoute(location) {
 router.beforeEach(function (to) {
   prefetchRoute(to)
 })
-router.afterEach((to) => {
-  document.title = `${to.meta.title} on RuneLite Hub Stats`
+router.afterEach((to, from) => {
+  if (to.path !== from.path || !from.matched.length)
+    document.title = `${to.meta.title} on RuneLite Hub Stats`
 })
 export default router
