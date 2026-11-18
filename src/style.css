@@ -6,6 +6,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   color-scheme: dark;
+  scrollbar-gutter: stable;
   --background: #15171b;
   --surface: #1d2026;
   --surface-raised: #242831;
