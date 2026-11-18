@@ -3338,5 +3338,7 @@
   "rs-vc",
   "bosswise",
   "osrs-traduccion-es",
-  "render-replay"
+  "render-replay",
+  "account-build-planner",
+  "bank-slot-lock"
 ]
