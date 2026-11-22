@@ -3363,5 +3363,10 @@
   "local-progress-notes",
   "oldvicios",
   "gim-drop-values",
-  "overload-sync"
+  "overload-sync",
+  "clan-coffer-tracker",
+  "game-message-popups",
+  "goal-planner",
+  "holy-empire",
+  "slayer-tracker"
 ]
