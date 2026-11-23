@@ -3381,5 +3381,7 @@
   "temporary-rebuild-bank",
   "tile-hotkeys",
   "time-played-in-hours",
-  "trade-tweaks"
+  "trade-tweaks",
+  "plugin-profiler",
+  "project-halo"
 ]
