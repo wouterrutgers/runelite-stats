@@ -308,19 +308,23 @@ export function buildDatasets(source) {
       description: plugin.description,
       tags: plugin.tags,
       installs: plugin.installs,
-      high: plugin.high ? { count: plugin.high.count } : null,
       createdAt: plugin.createdAt,
       lastUpdatedAt: plugin.lastUpdatedAt,
       current: plugin.current,
       available: plugin.available,
       disabled: plugin.disabled,
       growth: Object.fromEntries(
-        Object.entries(plugin.growth).map(([period, values]) => [
-          period,
-          Object.fromEntries(
-            Object.entries(values).filter(([key, value]) => key !== 'current' && value !== null),
-          ),
-        ]),
+        Object.entries(plugin.growth).map(
+          ([period, { comparedAt, change, percentage, status }]) => [
+            period,
+            {
+              comparedAt: comparedAt ?? undefined,
+              change: change ?? undefined,
+              percentage: percentage ?? undefined,
+              status: status === 'new' ? status : undefined,
+            },
+          ],
+        ),
       ),
     }
   })
@@ -390,7 +394,7 @@ export function buildDatasets(source) {
   const active = plugins
     .filter((plugin) => plugin.current && plugin.activity.updates90d > 0)
     .sort((left, right) => right.activity.updates90d - left.activity.updates90d)
-    .slice(0, 50)
+    .slice(0, 15)
   const stale = plugins
     .filter(
       (plugin) =>
@@ -433,7 +437,16 @@ export function buildDatasets(source) {
     ['summary.json', summary],
     ['plugins.json', directory],
     ['growth.json', growth],
-    ['developers.json', developers],
+    [
+      'developers.json',
+      developers.map(({ growth, ...developer }) => ({
+        ...developer,
+        growth: {
+          '7d': { change: growth['7d'].change },
+          '30d': { change: growth['30d'].change },
+        },
+      })),
+    ],
     [
       'hub/summary.json',
       {
@@ -445,8 +458,7 @@ export function buildDatasets(source) {
           displayName: plugin.displayName,
           activity: { updates90d: plugin.activity.updates90d },
         })),
-        stale: stale.map((plugin) => directoryByIdentifier.get(plugin.internalName)),
-        aliases: hub.aliases,
+        staleCount: stale.length,
       },
     ],
     [
@@ -476,7 +488,8 @@ export function buildDatasets(source) {
         resolved,
       })),
     ],
-    ['hub/authors.json', hub.authors],
+    ['hub/authors.json', hub.authors.slice(0, 15)],
+    ['hub/stale.json', stale.map((plugin) => directoryByIdentifier.get(plugin.internalName))],
   ])
   for (const plugin of plugins) {
     const position = positions.get(plugin.internalName)

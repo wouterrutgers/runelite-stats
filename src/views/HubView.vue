@@ -8,6 +8,13 @@ import TimeChart from '../components/TimeChart.vue'
 import DateRanges from '../components/DateRanges.vue'
 import PluginTable from '../components/PluginTable.vue'
 const { data, error, loading, reload } = useDataset()
+const staleRequested = ref(false)
+const {
+  data: stalePlugins,
+  error: staleError,
+  loading: staleLoading,
+  reload: reloadStale,
+} = useDataset(() => (staleRequested.value ? ['hub/stale.json'] : []))
 const range = ref('6m')
 const weekly = computed(() =>
   data.value ? withinRange(data.value[1], range.value, data.value[0].syncedAt, 'weekEndedAt') : [],
@@ -144,7 +151,7 @@ const latency = computed(() =>
               </div>
             </div>
             <ol v-if="data[0].active.length" class="maintenance-list">
-              <li v-for="plugin in data[0].active.slice(0, 15)" :key="plugin.internalName">
+              <li v-for="plugin in data[0].active" :key="plugin.internalName">
                 <RouterLink :to="`/plugin/${plugin.internalName}`">{{
                   plugin.displayName
                 }}</RouterLink
@@ -160,7 +167,7 @@ const latency = computed(() =>
               </div>
             </div>
             <ol v-if="data[4].length" class="maintenance-list">
-              <li v-for="author in data[4].slice(0, 15)" :key="author.login">
+              <li v-for="author in data[4]" :key="author.login">
                 <a :href="`https://github.com/${author.login}`" target="_blank" rel="noreferrer"
                   >{{ author.login }} ↗</a
                 ><strong
@@ -172,15 +179,22 @@ const latency = computed(() =>
             <p v-else class="empty-inline">Contributor history is awaiting collection.</p>
           </section>
         </div>
-        <details class="panel detail-bottom">
+        <details class="panel detail-bottom" @toggle="staleRequested ||= $event.target.open">
           <summary class="details-heading">
             Plugins without an update in 180 days
-            <span class="badge">{{ number(data[0].stale.length) }}</span>
+            <span class="badge">{{ number(data[0].staleCount) }}</span>
           </summary>
           <p class="panel-note">
             A stable plugin may need few updates. Age alone does not imply a problem or abandonment.
           </p>
-          <PluginTable :plugins="data[0].stale" default-sort="rank" /></details></template
+          <DataState
+            v-if="staleRequested"
+            :loading="staleLoading"
+            :error="staleError"
+            @retry="reloadStale"
+          >
+            <PluginTable v-if="stalePlugins" :plugins="stalePlugins" default-sort="rank" />
+          </DataState></details></template
     ></DataState>
   </div>
 </template>

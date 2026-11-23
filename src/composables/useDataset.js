@@ -1,4 +1,4 @@
-import { ref, shallowRef, watch } from 'vue'
+import { computed, ref, shallowRef, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { datasetsForPath } from '../datasets.js'
 const cache = new Map()
@@ -32,8 +32,9 @@ export function loadDataset(filename) {
   }
   return requests.get(filename)
 }
-export function useDataset() {
+export function useDataset(resolvePaths) {
   const route = useRoute()
+  const filenames = computed(resolvePaths ?? (() => datasetsForPath(route.path)))
   const data = shallowRef(null)
   const error = ref(null)
   const loading = ref(true)
@@ -41,7 +42,7 @@ export function useDataset() {
   async function reload() {
     const current = ++request
     error.value = null
-    const paths = datasetsForPath(route.path)
+    const paths = filenames.value
     if (
       paths.every(function (filename) {
         return cache.has(filename)
@@ -67,6 +68,6 @@ export function useDataset() {
       if (current === request) loading.value = false
     }
   }
-  watch(() => route.path, reload, { immediate: true })
+  watch(filenames, reload, { immediate: true })
   return { data, error, loading, reload }
 }
