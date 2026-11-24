@@ -3384,5 +3384,9 @@
   "trade-tweaks",
   "plugin-profiler",
   "project-halo",
-  "gauntlet-helper"
+  "gauntlet-helper",
+  "chat-message-sandbox",
+  "clan-promotion-helper",
+  "teleport-tile-markers",
+  "total-boss-kc"
 ]
