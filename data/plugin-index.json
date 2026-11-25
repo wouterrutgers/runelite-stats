@@ -3397,5 +3397,8 @@
   "helmhider",
   "inventory-to-tab",
   "tick-tracker-bar",
-  "herbi-stats"
+  "herbi-stats",
+  "bank-tag-labels",
+  "old-world-select",
+  "old-world-switcher"
 ]
