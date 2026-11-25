@@ -1,5 +1,6 @@
 <script setup>
 import { watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useDataset } from '../composables/useDataset.js'
 import { number, date } from '../utils/format.js'
 import DataState from '../components/DataState.vue'
@@ -7,14 +8,18 @@ import MetricCard from '../components/MetricCard.vue'
 import GrowthValue from '../components/GrowthValue.vue'
 import PluginTable from '../components/PluginTable.vue'
 import ActivityList from '../components/ActivityList.vue'
+import { updatePageMetadata } from '../seo.js'
 const { data, error, loading, reload } = useDataset()
-watch(
-  data,
-  function (developer) {
-    if (developer) document.title = `${developer.name} on RuneLite Hub Stats`
-  },
-  { immediate: true },
-)
+if (!import.meta.env.SSR) {
+  const route = useRoute()
+  watch(
+    data,
+    function (developer) {
+      if (developer && route.name === 'developer') updatePageMetadata(route, developer)
+    },
+    { immediate: true },
+  )
+}
 </script>
 <template>
   <div class="page">

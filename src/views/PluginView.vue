@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useDataset } from '../composables/useDataset.js'
 import { number, date, timestamp, withinRange } from '../utils/format.js'
 import DataState from '../components/DataState.vue'
@@ -8,15 +9,19 @@ import GrowthValue from '../components/GrowthValue.vue'
 import DateRanges from '../components/DateRanges.vue'
 import TimeChart from '../components/TimeChart.vue'
 import ActivityList from '../components/ActivityList.vue'
+import { updatePageMetadata } from '../seo.js'
 const { data, error, loading, reload } = useDataset()
 const range = ref('30d')
-watch(
-  data,
-  function (plugin) {
-    if (plugin) document.title = `${plugin.displayName} on RuneLite Hub Stats`
-  },
-  { immediate: true },
-)
+if (!import.meta.env.SSR) {
+  const route = useRoute()
+  watch(
+    data,
+    function (plugin) {
+      if (plugin && route.name === 'plugin') updatePageMetadata(route, plugin)
+    },
+    { immediate: true },
+  )
+}
 const history = computed(() => {
   if (!data.value) return []
   const rows = range.value === '48h' ? data.value.history.recent : data.value.history.daily
@@ -50,7 +55,7 @@ const markers = computed(
               By
               <template v-for="(author, index) in data.authors" :key="author.slug"
                 ><span v-if="index">, </span
-                ><RouterLink :to="`/developer/${author.slug}`">{{
+                ><RouterLink :to="{ name: 'developer', params: { slug: author.slug } }">{{
                   author.name
                 }}</RouterLink></template
               ><span v-if="!data.authors.length">an unrecorded author</span>
@@ -184,8 +189,13 @@ const markers = computed(
             <template v-if="data.development.aliases.length"
               ><h3>Known renames</h3>
               <p v-for="alias in data.development.aliases" :key="alias.number">
-                <RouterLink :to="`/plugin/${alias.from}`">{{ alias.from }}</RouterLink> →
-                <RouterLink :to="`/plugin/${alias.to}`">{{ alias.to }}</RouterLink>
+                <RouterLink :to="{ name: 'plugin', params: { internalName: alias.from } }">{{
+                  alias.from
+                }}</RouterLink>
+                →
+                <RouterLink :to="{ name: 'plugin', params: { internalName: alias.to } }">{{
+                  alias.to
+                }}</RouterLink>
               </p>
               <p class="panel-note">Each ID keeps its own install history.</p></template
             >

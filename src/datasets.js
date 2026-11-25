@@ -1,6 +1,6 @@
 export function datasetsForPath(path) {
   // The HTML preload script also uses this function before the app loads.
-  const detail = path.match(/^\/(plugin|developer)\/([^/]+)\/?$/)
+  const detail = path.match(/^\/(plugin|developer)\/([^/]+)$/)
   if (detail) return [`${detail[1]}/${detail[2]}.json`]
 
   return (
@@ -16,6 +16,6 @@ export function datasetsForPath(path) {
         'hub/latency.json',
         'hub/authors.json',
       ],
-    }[path.replace(/\/$/, '') || '/'] || []
+    }[path] || []
   )
 }

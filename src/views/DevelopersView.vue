@@ -94,7 +94,9 @@ const visible = computed(() => filtered.value.slice((page.value - 1) * 40, page.
             <tbody>
               <tr v-for="developer in visible" :key="developer.slug">
                 <th scope="row">
-                  <RouterLink :to="`/developer/${developer.slug}`">{{ developer.name }}</RouterLink>
+                  <RouterLink :to="{ name: 'developer', params: { slug: developer.slug } }">{{
+                    developer.name
+                  }}</RouterLink>
                 </th>
                 <td class="numeric">{{ number(developer.pluginCount) }}</td>
                 <td class="numeric">{{ number(developer.installs) }}</td>

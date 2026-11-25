@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "npm run aggregate && vite",
-    "build": "npm run aggregate && vite build",
+    "build": "npm run aggregate && vite build && vite build --ssr src/render.js --outDir .cache/prerender && node scripts/prerender.js",
     "preview": "vite preview",
     "lint": "eslint .",
     "test": "node --test",

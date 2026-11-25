@@ -1,11 +1,12 @@
-import { computed, ref, shallowRef, watch } from 'vue'
+import { computed, inject, ref, shallowRef, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { datasetsForPath } from '../datasets.js'
-const cache = new Map()
+export const datasetCache = Symbol('dataset cache')
+const browserCache = new Map()
 const requests = new Map()
 const datasetHash = import.meta.env.DATASET_HASH
 export function loadDataset(filename) {
-  if (cache.has(filename)) return Promise.resolve(cache.get(filename))
+  if (browserCache.has(filename)) return Promise.resolve(browserCache.get(filename))
   if (!requests.has(filename)) {
     requests.set(
       filename,
@@ -20,7 +21,7 @@ export function loadDataset(filename) {
           return response.json()
         })
         .then(function (value) {
-          cache.set(filename, value)
+          browserCache.set(filename, value)
           requests.delete(filename)
           return value
         })
@@ -33,6 +34,7 @@ export function loadDataset(filename) {
   return requests.get(filename)
 }
 export function useDataset(resolvePaths) {
+  const cache = inject(datasetCache, browserCache)
   const route = useRoute()
   const filenames = computed(resolvePaths ?? (() => datasetsForPath(route.path)))
   const data = shallowRef(null)

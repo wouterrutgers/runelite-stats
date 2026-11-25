@@ -129,9 +129,9 @@ const visible = computed(() =>
                   />
                 </span>
                 <div class="plugin-cell-details">
-                  <RouterLink :to="`/plugin/${plugin.internalName}`">{{
-                    plugin.displayName
-                  }}</RouterLink
+                  <RouterLink
+                    :to="{ name: 'plugin', params: { internalName: plugin.internalName } }"
+                    >{{ plugin.displayName }}</RouterLink
                   ><span v-if="plugin.disabled" class="badge">Disabled</span
                   ><span v-else-if="!plugin.current" class="badge">Historical</span
                   ><span v-else-if="!plugin.available" class="badge">Unavailable</span

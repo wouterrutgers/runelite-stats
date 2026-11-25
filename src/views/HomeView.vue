@@ -1,13 +1,14 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useDataset } from '../composables/useDataset.js'
-import { number, date, relativeTime, withinRange } from '../utils/format.js'
+import { number, date, relativeTime, timestamp, withinRange } from '../utils/format.js'
 import DataState from '../components/DataState.vue'
 import MetricCard from '../components/MetricCard.vue'
 import PluginList from '../components/PluginList.vue'
 import TimeChart from '../components/TimeChart.vue'
 import DateRanges from '../components/DateRanges.vue'
 const { data, error, loading, reload } = useDataset()
+const prerendering = import.meta.env.SSR
 const currentTime = ref(Date.now())
 const nextUpdate = computed(function () {
   const next = new Date(currentTime.value)
@@ -38,8 +39,13 @@ const trend = computed(() =>
         <p>Track RuneLite Plugin Hub popularity, new releases and install growth.</p>
       </div>
       <div v-if="data" class="collection-time">
-        <p>Updated {{ relativeTime(data.syncedAt, currentTime) }}</p>
-        <div class="next-update">
+        <p>
+          Updated
+          <time :datetime="data.syncedAt">{{
+            prerendering ? timestamp(data.syncedAt) : relativeTime(data.syncedAt, currentTime)
+          }}</time>
+        </p>
+        <div v-if="!prerendering" class="next-update">
           Next update {{ relativeTime(nextUpdate, currentTime) }}
           <details
             class="update-info"

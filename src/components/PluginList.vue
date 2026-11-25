@@ -28,7 +28,9 @@ defineProps({
         />
       </span>
       <span class="plugin-list-name">
-        <RouterLink :to="`/plugin/${plugin.internalName}`">{{ plugin.displayName }}</RouterLink>
+        <RouterLink :to="{ name: 'plugin', params: { internalName: plugin.internalName } }">{{
+          plugin.displayName
+        }}</RouterLink>
         <small>
           <template v-if="showDate">Added on {{ date(plugin.createdAt) }}</template>
           <template v-else-if="plugin.author">By {{ plugin.author }}</template>

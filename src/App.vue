@@ -24,13 +24,9 @@ watch(
         <RouterLink
           to="/plugins"
           active-class="is-active"
-          :class="{ 'is-active': route.path.startsWith('/plugin/') }"
+          :class="{ 'is-active': route.name === 'plugin' }"
           :aria-current="
-            route.path.startsWith('/plugin/')
-              ? 'location'
-              : route.path === '/plugins'
-                ? 'page'
-                : undefined
+            route.name === 'plugin' ? 'location' : route.name === 'plugins' ? 'page' : undefined
           "
           >Plugins</RouterLink
         >
@@ -38,11 +34,11 @@ watch(
         <RouterLink
           to="/developers"
           active-class="is-active"
-          :class="{ 'is-active': route.path.startsWith('/developer/') }"
+          :class="{ 'is-active': route.name === 'developer' }"
           :aria-current="
-            route.path.startsWith('/developer/')
+            route.name === 'developer'
               ? 'location'
-              : route.path === '/developers'
+              : route.name === 'developers'
                 ? 'page'
                 : undefined
           "

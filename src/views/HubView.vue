@@ -152,9 +152,9 @@ const latency = computed(() =>
             </div>
             <ol v-if="data[0].active.length" class="maintenance-list">
               <li v-for="plugin in data[0].active" :key="plugin.internalName">
-                <RouterLink :to="`/plugin/${plugin.internalName}`">{{
-                  plugin.displayName
-                }}</RouterLink
+                <RouterLink
+                  :to="{ name: 'plugin', params: { internalName: plugin.internalName } }"
+                  >{{ plugin.displayName }}</RouterLink
                 ><strong>{{ number(plugin.activity.updates90d) }} <small>updates</small></strong>
               </li>
             </ol>

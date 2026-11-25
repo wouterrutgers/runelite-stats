@@ -7,7 +7,7 @@ import { defineConfig } from 'vite'
 import { datasetsForPath } from './src/datasets.js'
 
 function preloadInitialDatasets(datasetsForPath, baseUrl, version) {
-  const path = location.hash.slice(1).split('?')[0] || '/'
+  const path = location.pathname.slice(baseUrl.length - 1)
   for (const filename of datasetsForPath(path)) {
     const link = document.createElement('link')
     link.rel = 'preload'
@@ -39,10 +39,15 @@ addDatasetFilesToHash(datasetHash, datasetDirectory, datasetDirectory)
 const datasetVersion = datasetHash.digest('hex')
 let baseUrl
 
-export default defineConfig({
+export default defineConfig(({ isPreview, isSsrBuild }) => ({
   base: process.env.PAGES_BASE_PATH || '/runelite-stats/',
+  appType: isPreview ? 'mpa' : 'spa',
+  build: { copyPublicDir: !isSsrBuild },
   define: {
     'import.meta.env.DATASET_HASH': JSON.stringify(datasetVersion),
+    'import.meta.env.PAGES_ORIGIN': JSON.stringify(
+      process.env.PAGES_ORIGIN || 'https://wouterrutgers.github.io',
+    ),
   },
   plugins: [
     vue(),
@@ -55,9 +60,10 @@ export default defineConfig({
         // Start data requests before stylesheets can block this inline script.
         return html.replace(
           '<meta charset="UTF-8" />',
-          `<meta charset="UTF-8" />\n    <script>(${preloadInitialDatasets.toString()})(${datasetsForPath.toString()}, ${JSON.stringify(baseUrl)}, ${JSON.stringify(datasetVersion)})</script>`,
+          (marker) =>
+            `${marker}\n    <script>(${preloadInitialDatasets.toString()})(${datasetsForPath.toString()}, ${JSON.stringify(baseUrl)}, ${JSON.stringify(datasetVersion)})</script>`,
         )
       },
     },
   ],
-})
+}))
