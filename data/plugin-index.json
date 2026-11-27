@@ -3413,5 +3413,9 @@
   "sable",
   "classic-fishing-spots",
   "prison-of-raeun-afk",
-  "time-tracking-export"
+  "time-tracking-export",
+  "afk-blood-rc-helper",
+  "hide-bank-quantity",
+  "location-camera-points",
+  "skill-targets"
 ]
